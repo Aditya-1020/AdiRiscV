@@ -9,3 +9,10 @@ A custom 32-bit RISC-V CPU built from scratch in SystemVerilog, featuring pipeli
 
 # Strech Goal
 add cryptographic instructions, vector processing unit, out-of-order execution
+
+
+# Compiling for RISC-V
+```sh
+riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -c FILENAME.c -o FILENAME_OUT.o
+riscv64-unknown-elf-objdump -d FILENAME_OUT.o
+```
