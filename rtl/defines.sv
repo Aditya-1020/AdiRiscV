@@ -26,7 +26,6 @@
 `define ALU_ADD  4'b0000
 `define ALU_SUB  4'b0001
 
-
 // set Les than
 `define ALU_SLT  4'b1000 // Signed comparison
 `define ALU_SLTU 4'b1001 // Unsigned comparison
