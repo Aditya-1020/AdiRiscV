@@ -7,7 +7,7 @@ module instruction_mem (
     output logic [XLEN-1:0] instruction
 );
 
-    logic [XLEN-1:0] mem [0:MEM_SIZE-1];
+    logic [XLEN-1:0] inst_mem [0:MEM_SIZE-1];
 
     
     initial begin
@@ -20,6 +20,6 @@ module instruction_mem (
     // end
 
 
-    assign instruction <= mem[address[XLEN-1:2]];
+    assign instruction = inst_mem[address[XLEN-1:2]];
 
 endmodule

@@ -6,7 +6,7 @@ module PC (
     input  logic clk,
     input  logic reset,
     input  logic [XLEN-1:0] pc_in, // pc_next
-    output logic [XLEN-1:0] pc // pc
+    output logic [XLEN-1:0] pc   // pc
 );
 
     always_ff @(posedge clk or posedge reset) begin

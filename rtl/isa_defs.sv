@@ -44,13 +44,19 @@ typedef enum logic [2:0] {
     FUNCT3_AND      = 3'b111  // AND, ANDI
 } funct3_e;
 
-
 // fucny 7 31:25 bit
 typedef enum logic [6:0] {
     FUNCT7_ADD_SLT_ETC = 7'b0000000,
     FUNCT7_SUB_SRA     = 7'b0100000
 } funct7_e;
 
+typedef enum logic [2:0] {
+    ITYPE = 3'b000,
+    STYPE = 3'b001,
+    BTYPE = 3'b010,
+    UTYPE = 3'b011,
+    JTYPE = 3'b100,
+} imm_gen_e;
 
 // formating  for decoder
 typedef struct packed {
