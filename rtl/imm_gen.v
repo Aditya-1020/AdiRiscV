@@ -19,6 +19,7 @@ module imm_gen (
     always @(*) begin
         case (opcode)
             `OP_IMM, `OP_IMM_LOAD, `OP_J_JALR: immediate = i_imm;
+            // `OP_IMM, `OP_IMM_LOAD: immediate = i_imm;
             `OP_S_TYPE: immediate = s_imm;
             `OP_B_TYPE: immediate = b_imm;
             `OP_U_LUI, `OP_U_AUIPC: immediate = u_imm;

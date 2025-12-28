@@ -15,3 +15,5 @@ xsim.dir/
 clean.sh
 sim/
 *.bit *.bin *.mcs
+
+riscv-venv/
