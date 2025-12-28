@@ -18,19 +18,25 @@ module alu_control_tb;
         .ALUControl(ALUControl)
     );
 
-    reg [10:0] mem [0:11]; // {ALUOp, instr_30, funct3, expected}
+    reg [11:0] mem [0:11];// {ALUOp, instr_30, funct3, expected}
 
     integer i;
     initial begin
         $dumpfile("alu_control_tb.vcd");
         $dumpvars(0, alu_control_tb);
 
-        $readmemh("test_vectors.mem", mem);
+        $readmemh("tb/test_vectors.mem", mem);
+
+        $display("Debug: \n");
+        for (i = 0; i<12; i++) $display("mem[%0d] = %h \n", i, mem[i]);
 
         for (i = 0; i<12; i++) begin
-            {ALUOp, instr_30, funct3, expected} = mem[i];
+            // {ALUOp, instr_30, funct3[2:0], expected} = mem[i];
+            ALUOp     = mem[i][11:10];
+            instr_30  = mem[i][9];
+            funct3    = mem[i][8:6];
+            expected  = mem[i][5:2];
             #5;
-
             if (ALUControl !== expected) begin
                 $error("FAIL: %0d: %b %b %b -> %b (exp %b)", i, ALUOp, instr_30, funct3, ALUControl, expected);
             end else begin
