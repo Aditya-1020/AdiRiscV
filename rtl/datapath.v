@@ -89,7 +89,9 @@ module datapath (
     pc pc_inst (
         .clk(clk),
         .reset(reset),
-        .pc_next(stall ? pc_if : pc_next_if),
+        // .pc_next(stall ? pc_if : pc_next_if),
+        .pc_en(~stall),
+        .pc_next(pc_next_if),
         .pc(pc_if)
     );
     
