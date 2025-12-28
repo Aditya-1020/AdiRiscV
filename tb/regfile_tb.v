@@ -3,7 +3,7 @@
 `include "rtl/isa.v"
 
 module regfile_tb;
-    parameter XLEN = 32;
+    localparam XLEN = 32;
 
     reg clk;
     reg reset;

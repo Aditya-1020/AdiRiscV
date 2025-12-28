@@ -3,7 +3,7 @@
 `include "rtl/isa.v"
 
 module alu_tb;
-    parameter XLEN = 32;
+    localparam XLEN = 32;
     
     // Testbench signals
     reg [XLEN-1:0] a, b;

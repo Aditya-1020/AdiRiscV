@@ -3,8 +3,8 @@
 `include "rtl/isa.v"
 
 module imm_gen_tb;
-    parameter XLEN = `XLEN ;
-
+    localparam XLEN = 32;
+    
     reg [XLEN-1:0] instruction;
     wire [XLEN-1:0] immediate;
     // reg [6:0] opcode;
