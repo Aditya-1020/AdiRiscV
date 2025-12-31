@@ -3,7 +3,7 @@
 
 `timescale 1ps/1ps
 `default_nettype none
-`include "rtl/isa.v"
+`include "rtl/isa.vh"
 
 module decode_funct7 (
     input [6:0] funct7,

@@ -1,5 +1,5 @@
 `timescale 1ps/1ps
-`include "rtl/isa.v"
+`include "rtl/isa.vh"
 
 module tb_top;
     reg clk;

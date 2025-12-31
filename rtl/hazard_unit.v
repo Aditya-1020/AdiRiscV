@@ -1,6 +1,6 @@
 `timescale 1ps/1ps
 `default_nettype none
-`include "rtl/isa.v"
+`include "rtl/isa.vh"
 
 module hazard_unit (
     input wire [4:0] rs1_id_in, rs2_id_in,

@@ -1,7 +1,7 @@
 // branch target buffer
 `timescale 1ps/1ps
 `default_nettype none
-`include "rtl/isa.v"
+`include "rtl/isa.vh"
 
 module btb (
     input wire clk,

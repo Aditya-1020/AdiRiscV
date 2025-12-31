@@ -1,6 +1,6 @@
 `timescale 1ps/1ps
 `default_nettype none
-`include "rtl/isa.v"
+`include "rtl/isa.vh"
 
 module data_memory (
     input wire clk,

@@ -1,6 +1,6 @@
 `timescale 1ps/1ps
 `default_nettype none
-`include "rtl/isa.v"
+`include "rtl/isa.vh"
 
 module forwarding_unit (
     input wire [4:0] rs1_ex, rs2_ex,
