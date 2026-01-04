@@ -1,0 +1,229 @@
+// RISC-V RV32I Package - SystemVerilog
+
+package riscv_pkg;
+
+    // Basic Architecture Parameters
+    parameter int XLEN = 32;
+    parameter int NUM_REGS = 32;
+    parameter int IMEM_SIZE = 1024;      // Instructions (words)
+    parameter int DMEM_SIZE = 4096;      // Data (bytes)
+    parameter int WORD_ADDR_WIDTH = 10;
+    parameter int BYTE_ADDR_WIDTH = 12;
+    
+    parameter logic [XLEN-1:0] RESET_PC = 32'h00000000;
+    parameter logic [XLEN-1:0] NOP_INSTR = 32'h00000013;  // ADDI x0, x0, 0
+
+    // Instruction Opcodes (7-bit)
+    typedef enum logic [6:0] {
+        OP_LOAD     = 7'b0000011,
+        OP_STORE    = 7'b0100011,
+        OP_BRANCH   = 7'b1100011,
+        OP_JALR     = 7'b1100111,
+        OP_JAL      = 7'b1101111,
+        OP_OP_IMM   = 7'b0010011,
+        OP_OP       = 7'b0110011,
+        OP_AUIPC    = 7'b0010111,
+        OP_LUI      = 7'b0110111,
+        OP_SYSTEM   = 7'b1110011
+    } opcode_e;
+
+    // Instruction Format Types
+    typedef enum logic [2:0] {
+        FMT_R,      // R-type: register-register
+        FMT_I,      // I-type: immediate
+        FMT_S,      // S-type: store
+        FMT_B,      // B-type: branch
+        FMT_U,      // U-type: upper immediate
+        FMT_J       // J-type: jump
+    } instr_fmt_e;
+
+    // ALU Operations
+    typedef enum logic [3:0] {
+        ALU_ADD     = 4'b0000,
+        ALU_SUB     = 4'b0001,
+        ALU_SLL     = 4'b0010,
+        ALU_SLT     = 4'b0011,
+        ALU_SLTU    = 4'b0100,
+        ALU_XOR     = 4'b0101,
+        ALU_SRL     = 4'b0110,
+        ALU_SRA     = 4'b0111,
+        ALU_OR      = 4'b1000,
+        ALU_AND     = 4'b1001,
+        ALU_PASS_A  = 4'b1010,  // For LUI/AUIPC
+        ALU_PASS_B  = 4'b1011   // For LUI
+    } alu_op_e;
+
+
+    // Function 3 Fields (3-bit)
+    
+    // FUNCT3 for ALU operations (R-type and I-type)
+    typedef enum logic [2:0] {
+        F3_ADD_SUB  = 3'b000,
+        F3_SLL      = 3'b001,
+        F3_SLT      = 3'b010,
+        F3_SLTU     = 3'b011,
+        F3_XOR      = 3'b100,
+        F3_SRL_SRA  = 3'b101,
+        F3_OR       = 3'b110,
+        F3_AND      = 3'b111
+    } funct3_alu_e;
+    
+    // FUNCT3 for Load operations
+    typedef enum logic [2:0] {
+        F3_LB       = 3'b000,
+        F3_LH       = 3'b001,
+        F3_LW       = 3'b010,
+        F3_LBU      = 3'b100,
+        F3_LHU      = 3'b101
+    } funct3_load_e;
+    
+    // FUNCT3 for Store operations
+    typedef enum logic [2:0] {
+        F3_SB       = 3'b000,
+        F3_SH       = 3'b001,
+        F3_SW       = 3'b010
+    } funct3_store_e;
+    
+    // FUNCT3 for Branch operations
+    typedef enum logic [2:0] {
+        F3_BEQ      = 3'b000,
+        F3_BNE      = 3'b001,
+        F3_BLT      = 3'b100,
+        F3_BGE      = 3'b101,
+        F3_BLTU     = 3'b110,
+        F3_BGEU     = 3'b111
+    } funct3_branch_e;
+
+    // Function 7 Fields (7-bit)
+    typedef enum logic [6:0] {
+        F7_NORMAL   = 7'b0000000,
+        F7_ALT      = 7'b0100000   // For SUB and SRA
+    } funct7_e;
+
+    // Memory Operations (Load/Store Unit)
+    typedef enum logic [2:0] {
+        MEM_BYTE,       // LB/SB
+        MEM_HALF,       // LH/SH
+        MEM_WORD,       // LW/SW
+        MEM_BYTE_U,     // LBU
+        MEM_HALF_U      // LHU
+    } mem_op_e;
+
+    // Branch Operations
+    typedef enum logic [2:0] {
+        BR_EQ       = 3'b000,
+        BR_NE       = 3'b001,
+        BR_LT       = 3'b100,
+        BR_GE       = 3'b101,
+        BR_LTU      = 3'b110,
+        BR_GEU      = 3'b111
+    } branch_op_e;
+
+    // Pipeline Control Signals Structure
+    typedef struct packed {
+        logic           reg_write;      // Write to register file
+        logic           mem_read;       // Memory read enable
+        logic           mem_write;      // Memory write enable
+        logic           mem_to_reg;     // Select memory data for writeback
+        logic           alu_src;        // ALU source: 0=reg, 1=imm
+        logic           is_branch;      // Is branch instruction
+        logic           is_jump;        // Is jump instruction (JAL/JALR)
+        logic           is_jalr;        // Is JALR specifically
+        alu_op_e        alu_op;         // ALU operation
+        mem_op_e        mem_op;         // Memory operation type
+    } ctrl_signals_t;
+
+    // Pipeline Stage Definitions
+    typedef enum logic [2:0] {
+        STAGE_IF    = 3'b000,
+        STAGE_ID    = 3'b001,
+        STAGE_EX    = 3'b010,
+        STAGE_MEM   = 3'b011,
+        STAGE_WB    = 3'b100
+    } pipe_stage_e;
+
+    // Forwarding Control
+    typedef enum logic [1:0] {
+        FWD_NONE    = 2'b00,    // No forwarding (use RF)
+        FWD_WB      = 2'b01,    // Forward from WB stage
+        FWD_MEM     = 2'b10     // Forward from MEM stage
+    } forward_src_e;
+
+    
+    // Branch Prediction
+    
+    // Branch Target Buffer parameters
+    parameter int BTB_SIZE = 64;
+    parameter int BTB_INDEX_WIDTH = $clog2(BTB_SIZE);
+    parameter int BTB_TAG_WIDTH = XLEN - BTB_INDEX_WIDTH - 2;
+    
+    // Return Address Stack parameters
+    parameter int RAS_SIZE = 8;
+    parameter int RAS_PTR_WIDTH = $clog2(RAS_SIZE);
+    
+    // Branch prediction state (2-bit saturating counter)
+    typedef enum logic [1:0] {
+        PRED_STRONG_NOT_TAKEN   = 2'b00,
+        PRED_WEAK_NOT_TAKEN     = 2'b01,
+        PRED_WEAK_TAKEN         = 2'b10,
+        PRED_STRONG_TAKEN       = 2'b11
+    } branch_pred_state_e;
+    
+    // Branch prediction result structure
+    typedef struct packed {
+        logic               valid;
+        logic               taken;
+        logic [XLEN-1:0]    target;
+        branch_pred_state_e state;
+    } branch_pred_t;
+
+    // Hazard Detection
+    typedef struct packed {
+        logic load_use;         // Load-use hazard detected
+        logic control;          // Control hazard (branch/jump)
+        logic structural;       // Structural hazard (future: cache miss)
+    } hazard_t;
+
+    // Cache Parameters
+    parameter int ICACHE_SIZE = 512;            // 512 bytes
+    parameter int ICACHE_LINE_SIZE = 16;        // 16 bytes per line (4 words)
+    parameter int ICACHE_NUM_LINES = ICACHE_SIZE / ICACHE_LINE_SIZE;
+    parameter int ICACHE_INDEX_WIDTH = $clog2(ICACHE_NUM_LINES);
+    parameter int ICACHE_OFFSET_WIDTH = $clog2(ICACHE_LINE_SIZE);
+    parameter int ICACHE_TAG_WIDTH = XLEN - ICACHE_INDEX_WIDTH - ICACHE_OFFSET_WIDTH;
+
+    // Performance Counter Width
+    parameter int PERF_COUNTER_WIDTH = 32;
+
+    // // Helper Functions
+    // function automatic logic is_x0(input logic [4:0] reg_addr);
+    //     return (reg_addr == 5'd0);
+    // endfunction
+    // 
+    // // Check if instruction is a call (JAL/JALR with rd = x1 or x5)
+    // function automatic logic is_call(input logic [6:0] opcode, input logic [4:0] rd);
+    //     return ((opcode == OP_JAL || opcode == OP_JALR) && 
+    //             (rd == 5'd1 || rd == 5'd5));
+    // endfunction
+    // 
+    // // Check if instruction is a return (JALR with rs1 = x1 or x5, rd != x1/x5)
+    // function automatic logic is_return(input logic [6:0] opcode, 
+    //                                    input logic [4:0] rs1, 
+    //                                    input logic [4:0] rd);
+    //     return (opcode == OP_JALR && 
+    //             (rs1 == 5'd1 || rs1 == 5'd5) && 
+    //             (rd != 5'd1 && rd != 5'd5));
+    // endfunction
+    // 
+    // // Sign extend immediate
+    // function automatic logic [XLEN-1:0] sign_extend(input logic [XLEN-1:0] value, 
+    //                                                  input int bits);
+    //     return {{(XLEN-bits){value[bits-1]}}, value[bits-1:0]};
+    // endfunction
+    // 
+    // // Zero extend immediate
+    // function automatic logic [XLEN-1:0] zero_extend(input logic [XLEN-1:0] value, 
+    //                                                  input int bits);
+    //     return {{(XLEN-bits){1'b0}}, value[bits-1:0]};
+    // endfunction
+endpackage : riscv_pkg
