@@ -10,17 +10,19 @@ module regfile (
     output logic [XLEN-1:0] rs2_data
 );
 
-    // logic [XLEN-1:0] registers [0:NUM_REGS-1];
-    logic [XLEN-1:0] registers [NUM_REGS];
+    timeunit 1ns;
+    timeprecision 1ps;
 
+    logic [XLEN-1:0] registers [0:NUM_REGS-1];
 
     always_ff @(posedge clk) begin
-        if (wr_en && rd != 0)
+        if (wr_en && rd != 0) begin
             registers[rd] <= write_data;
+        end
     end
 
     always_comb begin
-        rs1_data = (rs1_addr == 0) ? '0 : (wr_en && rd == rs1_addr) ? write_data : regfile[rs1_addr];
+        rs1_data = (rs1_addr == 0) ? '0 : (wr_en && rd == rs1_addr) ? write_data : registers[rs1_addr];
         rs2_data = (rs2_addr == 0) ? '0 : (wr_en && rd == rs2_addr) ? write_data : registers[rs2_addr];
     end
 

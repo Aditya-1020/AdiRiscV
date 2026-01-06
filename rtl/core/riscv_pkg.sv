@@ -2,6 +2,8 @@
 
 package riscv_pkg;
 
+    timeunit 1ns; timeprecision 1ps;
+
     // Basic Architecture Parameters
     parameter int XLEN = 32;
     parameter int NUM_REGS = 32;
