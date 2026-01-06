@@ -39,7 +39,7 @@ module tb_regfile;
         write_data = data;
         wr_en = 1'b1;
         @(posedge clk); // write
-        #1; // dis line saved me lord
+        #1; // delay... cause write wasnt finishing
         wr_en = 1'b0;
     endtask
 
@@ -57,14 +57,7 @@ module tb_regfile;
             $display("RS1 READ PASS: x%0d, expeted: %h, got: %h", addr, expected, rs1_data);
             pass_count++;
         end
-        
-        /*
-        assert(rs1_data == expected)
-            else begin 
-                $error("RS1 Fail: x%0d", addr);
-                fail_count++;
-            end
-        */
+    
     endtask
 
     task automatic check_rs2(
@@ -83,13 +76,6 @@ module tb_regfile;
             pass_count++;
         end
 
-        /*
-        assert(rs2_data == expected)
-            else begin 
-                $error("RS2 Fail: x%0d", addr);
-                fail_count++;
-            end
-        */
     endtask
 
 
@@ -127,14 +113,6 @@ module tb_regfile;
         check_rs2(5'd0, '0);
     endtask
     
-
-    /*
-    property x0_immutable;
-            @(posedge clk)
-            (wr_en && rd==0) |-> (rs1_data=='0 && rs2_data == '0);
-    endproperty
-    assert property (x0_immutable) else $fatal("modiefied x0");
-    */
 
     initial begin
         // intialize registers
