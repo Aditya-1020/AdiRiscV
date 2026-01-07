@@ -12,7 +12,7 @@ module regfile (
 
     timeunit 1ns;
     timeprecision 1ps;
-
+    
     logic [XLEN-1:0] registers [0:NUM_REGS-1];
 
     always_ff @(posedge clk) begin
@@ -25,18 +25,5 @@ module regfile (
         rs1_data = (rs1_addr == 0) ? '0 : (wr_en && rd == rs1_addr) ? write_data : registers[rs1_addr];
         rs2_data = (rs2_addr == 0) ? '0 : (wr_en && rd == rs2_addr) ? write_data : registers[rs2_addr];
     end
-
-    /*
-    integer i;
-    always @(posedge clk) begin
-        if (reset) begin
-            for (i = 0; i < NUM_REGS; i++) begin
-                registers[i] <= 32'b0;
-            end
-        end else if (wr_en && rd != 5'b0) begin
-            registers[rd] <= write_data;
-        end
-    end
-    */
 
 endmodule
