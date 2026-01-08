@@ -32,8 +32,8 @@ if __name__ == "__main__":
     import sys
     
     if len(sys.argv) != 3:
-        print("usage: svbits <value> <width>")
-        print("ex; svbits -4 12")
+        print("usage: <value> <width>")
+        print("ex: -4 12")
         sys.exit(1)
         
     value = int(sys.argv[1], 0)
