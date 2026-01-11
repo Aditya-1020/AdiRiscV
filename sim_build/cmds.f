@@ -25,5 +25,6 @@ rtl/core/riscv_pkg.sv
 # tb/tb_pc_plus4.sv
 
 # immem
-rtl/frontend/fetch/imem.sv
-tb/tb_imem.sv
+# rtl/frontend/fetch/imem.sv
+# tb/tb_imem.sv
+
