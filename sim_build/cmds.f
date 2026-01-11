@@ -18,5 +18,8 @@ rtl/core/riscv_pkg.sv
 # tb/tb_branch_unit.sv
 
 # PC
-rtl/frontend/fetch/pc.sv
-tb/tb_pc.sv
+#rtl/frontend/fetch/pc.sv
+#tb/tb_pc.sv
+
+# PC+4 test function calling
+# tb/tb_pc_plus4.sv

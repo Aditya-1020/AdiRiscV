@@ -197,6 +197,11 @@ package riscv_pkg;
     // Performance Counter Width
     parameter int PERF_COUNTER_WIDTH = 32;
 
+    function automatic logic [XLEN-1:0] pc_plus4(input logic [XLEN-1:0] pc_in);
+        return pc_in + 4;
+    endfunction
+
+
     // // Helper Functions
     // function automatic logic is_x0(input logic [4:0] reg_addr);
     //     return (reg_addr == 5'd0);
