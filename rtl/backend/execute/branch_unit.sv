@@ -12,6 +12,9 @@ module branch_unit(
     output logic is_jump
 );
 
+    timeunit 1ns;
+    timeprecision 1ps;
+
     logic condition_met;
     logic is_branch;
     logic is_jal;
