@@ -21,5 +21,9 @@ rtl/core/riscv_pkg.sv
 #rtl/frontend/fetch/pc.sv
 #tb/tb_pc.sv
 
-# PC+4 test function calling
+# PC+4 function
 # tb/tb_pc_plus4.sv
+
+# immem
+rtl/frontend/fetch/imem.sv
+tb/tb_imem.sv
