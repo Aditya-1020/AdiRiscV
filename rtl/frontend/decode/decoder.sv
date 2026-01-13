@@ -32,36 +32,36 @@ module decoder(
 
         case (opcode)
             OP_OP: begin // R-type
-                funct3_alu_e aluf3 = funct3_alu_e'(funct3_bits);
-                    case (aluf3)
-                        F3_ADD_SUB: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SUB : ALU_ADD;
-                        F3_SLL: ctrl.alu_op = ALU_SLL;
-                        F3_SLT: ctrl.alu_op = ALU_SLT;
-                        F3_SLTU: ctrl.alu_op = ALU_SLTU;
-                        F3_XOR: ctrl.alu_op = ALU_XOR;
-                        F3_SRL_SRA: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SRA : ALU_SRL;
-                        F3_OR: ctrl.alu_op = ALU_OR;
-                        F3_AND: ctrl.alu_op = ALU_AND;
-                        default: ALU_ADD;
-                    endcase
-                end
+                ctrl.reg_write = 1'b1;
+                ctrl.alu_src = 1'b0;
+                case (funct3_bits)
+                    F3_ADD_SUB: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SUB : ALU_ADD;
+                    F3_SLL: ctrl.alu_op = ALU_SLL;
+                    F3_SLT: ctrl.alu_op = ALU_SLT;
+                    F3_SLTU: ctrl.alu_op = ALU_SLTU;
+                    F3_XOR: ctrl.alu_op = ALU_XOR;
+                    F3_SRL_SRA: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SRA : ALU_SRL;
+                    F3_OR: ctrl.alu_op = ALU_OR;
+                    F3_AND: ctrl.alu_op = ALU_AND;
+                    default: ctrl.alu_op = ALU_ADD;
+                endcase
+            end
 
             OP_IMM: begin // I-type
                 ctrl.reg_write = 1'b1;
                 ctrl.alu_src = 1'b1; // use immediate
-                funct3_alu_e aluf3 = funct3_alu_e'(funct3_bits);
-                    case (aluf3)
-                        F3_ADD_SUB: ctrl.alu_op = ALU_ADD; // ADDI
-                        F3_SLL: ctrl.alu_op = ALU_SLL;
-                        F3_SLT: ctrl.alu_op = ALU_SLT;
-                        F3_SLTU: ctrl.alu_op = ALU_SLTU;
-                        F3_XOR: ctrl.alu_op = ALU_XOR;
-                        F3_SRL_SRA: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SRA : ALU_SRL;
-                        F3_OR: ctrl.alu_op = ALU_OR;
-                        F3_AND: ctrl.alu_op = ALU_AND;
-                        default: ctrl.alu_op = ALU_ADD;
-                    endcase
-                end
+                case (funct3_bits)
+                    F3_ADD_SUB: ctrl.alu_op = ALU_ADD; // ADDI
+                    F3_SLL: ctrl.alu_op = ALU_SLL;
+                    F3_SLT: ctrl.alu_op = ALU_SLT;
+                    F3_SLTU: ctrl.alu_op = ALU_SLTU;
+                    F3_XOR: ctrl.alu_op = ALU_XOR;
+                    F3_SRL_SRA: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SRA : ALU_SRL;
+                    F3_OR: ctrl.alu_op = ALU_OR;
+                    F3_AND: ctrl.alu_op = ALU_AND;
+                    default: ctrl.alu_op = ALU_ADD;
+                endcase
+            end
             
             OP_LOAD: begin
                 ctrl.reg_write = 1'b1;
@@ -70,30 +70,28 @@ module decoder(
                 ctrl.alu_src = 1'b1;
                 ctrl.alu_op = ALU_ADD;
 
-                funct3_load_e loadf3 = funct3_load_e'(funct3_bits);
-                    case (loadf3)
-                        F3_LB: crtl.mem_op = MEM_BYTE;
-                        F3_LH: crtl.mem_op = MEM_HALF;
-                        F3_LW: crtl.mem_op = MEM_WORD;
-                        F3_LBU: crtl.mem_op = MEM_BYTE_U;
-                        F3_LHU: crtl.mem_op = MEM_HALF_U;
-                        default: ctrl.mem_op = MEM_WORD;
-                    endcase
-                end
+                case (funct3_bits)
+                    F3_LB: ctrl.mem_op = MEM_BYTE;
+                    F3_LH: ctrl.mem_op = MEM_HALF;
+                    F3_LW: ctrl.mem_op = MEM_WORD;
+                    F3_LBU: ctrl.mem_op = MEM_BYTE_U;
+                    F3_LHU: ctrl.mem_op = MEM_HALF_U;
+                    default: ctrl.mem_op = MEM_WORD;
+                endcase
+            end
             
             OP_STORE: begin
                 ctrl.mem_write = 1'b1;
                 ctrl.alu_src = 1'b1;
                 ctrl.alu_op = ALU_ADD;
 
-                funct3_store_e storef3 = funct3_store_e'(funct3_bits);
-                    case (storef3)
-                        F3_SB: ctrl.mem_op = MEM_BYTE;
-                        F3_SH: ctrl.mem_op = MEM_HALF;
-                        F3_SW: ctrl.mem_op = MEM_WORD;
-                        default: ctrl.mem_op = MEM_WORD;
-                    endcase
-                end
+                case (funct3_bits)
+                    F3_SB: ctrl.mem_op = MEM_BYTE;
+                    F3_SH: ctrl.mem_op = MEM_HALF;
+                    F3_SW: ctrl.mem_op = MEM_WORD;
+                    default: ctrl.mem_op = MEM_WORD;
+                endcase
+            end
 
             OP_BRANCH: begin
                 ctrl.is_branch = 1'b1;
@@ -113,7 +111,7 @@ module decoder(
                 ctrl.is_jump = 1'b1;
                 ctrl.is_jalr = 1'b1;
                 ctrl.alu_src = 1'b1;
-                ctrl.alu_op = ALU_ADD // rs1 + imm
+                ctrl.alu_op = ALU_ADD; // rs1 + imm
             end
 
             OP_LUI: begin
@@ -123,7 +121,7 @@ module decoder(
             end
 
             OP_AUIPC: begin
-                ctrl.reg_write= 1'b1;
+                ctrl.reg_write = 1'b1;
                 ctrl.alu_src = 1'b1;
                 ctrl.alu_op = ALU_ADD; // pc + imm
             end
@@ -137,6 +135,5 @@ module decoder(
             end
         endcase
     end
-
 
 endmodule

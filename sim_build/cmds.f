@@ -24,7 +24,10 @@ rtl/core/riscv_pkg.sv
 # PC+4 function
 # tb/tb_pc_plus4.sv
 
-# immem
+# imem
 # rtl/frontend/fetch/imem.sv
 # tb/tb_imem.sv
 
+# decoder
+rtl/frontend/decode/decoder.sv
+tb/tb_decoder.sv
