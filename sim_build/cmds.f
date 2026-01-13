@@ -29,5 +29,9 @@ rtl/core/riscv_pkg.sv
 # tb/tb_imem.sv
 
 # decoder
-rtl/frontend/decode/decoder.sv
-tb/tb_decoder.sv
+# rtl/frontend/decode/decoder.sv
+# tb/tb_decoder.sv
+
+# dmem
+rtl/backend/memory/dmem.sv
+tb/tb_dmem.sv
