@@ -12,15 +12,6 @@ module alu (
 
     logic [4:0] shift_amt;
     assign shift_amt = b[4:0];
-
-    // logic signed [XLEN-1:0] signed_a = signed'(a);
-    // logic signed [XLEN-1:0] signed_b = signed'(b);
-
-
-    /*NOTE: 
-    - for some reason simulation only works with inline cassting ? 
-    - But assigned casting waht i tried works in synthesis ? 
-    */
     
     always_comb begin
         case (op)
