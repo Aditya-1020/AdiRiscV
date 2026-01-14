@@ -1,37 +1,39 @@
-# packages
+# Package
 rtl/core/riscv_pkg.sv
 
+# Core Top Level
+rtl/core/riscv_single_cycle_core.sv  
+tb/tb_single_cycle.sv
+
 # ALU
-# backend/execute/alu.sv
+rtl/backend/execute/alu.sv  
 # tb/tb_alu.sv
 
-# Regfile
-# rtl/frontend/decode/regfile.sv
-# tb/tb_regfile.sv
-
-# imm gen
-# rtl/frontend/decode/imm_gen.sv
-# tb/tb_imm_gen.sv
-
-# branch unit
-# rtl/backend/execute/branch_unit.sv
+# Branch Unit
+rtl/backend/execute/branch_unit.sv  
 # tb/tb_branch_unit.sv
 
-# PC
-#rtl/frontend/fetch/pc.sv
-#tb/tb_pc.sv
+# Data Memory
+rtl/backend/memory/dmem.sv  
+# tb/tb_dmem.sv
 
-# PC+4 function
-# tb/tb_pc_plus4.sv
-
-# imem
-# rtl/frontend/fetch/imem.sv
-# tb/tb_imem.sv
-
-# decoder
-# rtl/frontend/decode/decoder.sv
+# Decoder
+rtl/frontend/decode/decoder.sv  
 # tb/tb_decoder.sv
 
-# dmem
-rtl/backend/memory/dmem.sv
-tb/tb_dmem.sv
+# Immediate Generator
+rtl/frontend/decode/imm_gen.sv  
+# tb/tb_imm_gen.sv
+
+# Register File
+rtl/frontend/decode/regfile.sv  
+# tb/tb_regfile.sv
+
+# Instruction Memory
+rtl/frontend/fetch/imem.sv  
+# tb/tb_imem.sv
+
+# Program Counter
+rtl/frontend/fetch/pc.sv  
+# tb/tb_pc.sv  
+# tb/tb_pc_plus4.sv
