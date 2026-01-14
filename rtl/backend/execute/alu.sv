@@ -1,11 +1,14 @@
 import riscv_pkg::*;
 
 module alu (
-    input logic [XLEN-1:0] a, b,
+    input logic [XLEN-1:0] a, 
+    input logic [XLEN-1:0] b,
     input alu_op_e op,
-    output logic [XLEN-1:0] result,
-    output logic zero
+    output logic zero,
+    output logic [XLEN-1:0] result
 );
+    timeunit 1ns;
+    timeprecision 1ps;
 
     logic [4:0] shift_amt;
     assign shift_amt = b[4:0];
@@ -17,8 +20,8 @@ module alu (
     /*NOTE: 
     - for some reason simulation only works with inline cassting ? 
     - But assigned casting waht i tried works in synthesis ? 
-
     */
+    
     always_comb begin
         case (op)
             ALU_ADD : result = a + b;

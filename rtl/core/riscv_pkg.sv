@@ -6,13 +6,15 @@ package riscv_pkg;
 
     // Basic Architecture Parameters
     parameter int XLEN = 32;
-    parameter int NUM_REGS = 32;
+    parameter REG_ADDR_WIDTH = 5;
+    parameter int NUM_REGS = 2**REG_ADDR_WIDTH; // 32
     parameter int IMEM_SIZE = 1024;      // Instructions (words)
     parameter int DMEM_SIZE = 4096;      // Data (bytes)
     parameter int WORD_ADDR_WIDTH = 10;
     parameter int BYTE_ADDR_WIDTH = 12;
     
     parameter logic [XLEN-1:0] RESET_PC = 32'h00000000;
+    parameter logic [XLEN-1:0] RESET_REG = 32'h00000000;
     parameter logic [XLEN-1:0] NOP_INSTR = 32'h00000013;  // ADDI x0, x0, 0
 
     // Instruction Opcodes (7-bit)
