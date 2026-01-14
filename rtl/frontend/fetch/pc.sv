@@ -10,7 +10,7 @@ module pc(
     timeunit 1ns;
     timeprecision 1ps;
 
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         if (reset) begin
             pc <= RESET_PC;
         end else if (pc_en) begin
