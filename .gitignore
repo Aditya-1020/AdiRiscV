@@ -13,7 +13,6 @@ xsim.dir/
 *.jou *.log *.pb *.backup.* *.wdb
 *.vcd *.vpd *.snap *.mld
 
-clean.sh
 sim/
 *.bit *.bin *.mcs
 
