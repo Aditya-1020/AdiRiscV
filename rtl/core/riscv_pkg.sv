@@ -199,40 +199,44 @@ package riscv_pkg;
     // Performance Counter Width
     parameter int PERF_COUNTER_WIDTH = 32;
 
-    function automatic logic [XLEN-1:0] pc_plus4(input logic [XLEN-1:0] pc_in);
-        return pc_in + 4;
-    endfunction
+    // IF/ID pipeline reg
+    typedef struct packed {
+        logic [XLEN-1:0] pc;
+        logic [XLEN-1:0] instruction;
+        logic [XLEN-1:0] pc_plus4;
+        logic valid_if_id;
+    } if_id_reg_t;
+
+    // ID/EX pipeline reg
+    typedef struct packed {
+        logic [XLEN-1:0] pc;
+        logic [XLEN-1:0] rs1_data;
+        logic [XLEN-1:0] rs2_data;
+        logic [XLEN-1:0] immediate;
+        logic [REG_ADDR_WIDTH-1:0] rs1_addr;
+        logic [REG_ADDR_WIDTH-1:0] rs2_addr;
+        logic [REG_ADDR_WIDTH-1:0] rd_addr;
+        ctrl_signals_t ctrl;
+        logic valid_id_ex;
+    } id_ex_reg_t;
+
+    // EX/MEM pipeline reg
+    typedef struct packed {
+        logic [XLEN-1:0] alu_result;
+        logic [XLEN-1:0] rs2_data_str; // For stores
+        logic [REG_ADDR_WIDTH-1:0] rd_addr;
+        ctrl_signals_t ctrl;
+        logic valid_ex_mem;
+    } ex_mem_reg_t;
+
+    // MEM/WB pipeline reg
+    typedef struct packed {
+        logic [XLEN-1:0] alu_result;
+        logic [XLEN-1:0] mem_data;
+        logic [REG_ADDR_WIDTH-1:0] rd_addr;
+        ctrl_signals_t ctrl;
+        logic valid_mem_wb;
+    } mem_wb_reg_t;
 
 
-    // // Helper Functions
-    // function automatic logic is_x0(input logic [4:0] reg_addr);
-    //     return (reg_addr == 5'd0);
-    // endfunction
-    // 
-    // // Check if instruction is a call (JAL/JALR with rd = x1 or x5)
-    // function automatic logic is_call(input logic [6:0] opcode, input logic [4:0] rd);
-    //     return ((opcode == OP_JAL || opcode == OP_JALR) && 
-    //             (rd == 5'd1 || rd == 5'd5));
-    // endfunction
-    // 
-    // // Check if instruction is a return (JALR with rs1 = x1 or x5, rd != x1/x5)
-    // function automatic logic is_return(input logic [6:0] opcode, 
-    //                                    input logic [4:0] rs1, 
-    //                                    input logic [4:0] rd);
-    //     return (opcode == OP_JALR && 
-    //             (rs1 == 5'd1 || rs1 == 5'd5) && 
-    //             (rd != 5'd1 && rd != 5'd5));
-    // endfunction
-    // 
-    // // Sign extend immediate
-    // function automatic logic [XLEN-1:0] sign_extend(input logic [XLEN-1:0] value, 
-    //                                                  input int bits);
-    //     return {{(XLEN-bits){value[bits-1]}}, value[bits-1:0]};
-    // endfunction
-    // 
-    // // Zero extend immediate
-    // function automatic logic [XLEN-1:0] zero_extend(input logic [XLEN-1:0] value, 
-    //                                                  input int bits);
-    //     return {{(XLEN-bits){1'b0}}, value[bits-1:0]};
-    // endfunction
 endpackage : riscv_pkg
