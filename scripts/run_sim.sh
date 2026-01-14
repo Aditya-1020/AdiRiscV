@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
 fi
 
 TB_NAME=$1
-CMDS_FILE=${2:-"sim_build/cmds.f"}  # Changed from sim_builds to sim_build
+CMDS_FILE=${2:-"sim_build/cmds.f"}
 SNAPSHOT=${3:-"sim"}
 
 # Check if file exists before proceeding
