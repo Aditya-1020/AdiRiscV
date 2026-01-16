@@ -19,7 +19,8 @@ module if_stage (
 
     // PC
     assign pc_plus4 = pc + 32'd4;
-    assign pc_en = branch_taken ? branch_target : pc_plus4;
+    assign pc_next = branch_taken ? branch_target : pc_plus4;
+    assign pc_en = !pc_stall;
 
     pc pc_inst (
         .clk(clk),

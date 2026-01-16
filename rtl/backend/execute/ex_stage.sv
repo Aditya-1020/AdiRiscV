@@ -104,8 +104,7 @@ module ex_stage (
         .funct3(funct3_branch),
         .opcode(opcode),
         .branch_taken(branch_taken),
-        .branch_target(branch_target),
-        .is_jump(is_jump)
+        .branch_target(branch_target)
     );
 
     // pack dis up

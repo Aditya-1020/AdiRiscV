@@ -1,6 +1,6 @@
 import riscv_pkg::*;
 
-module id_ex_stage (
+module id_ex_reg (
     input logic clk,
     input logic reset,
     input logic stall, // hold values

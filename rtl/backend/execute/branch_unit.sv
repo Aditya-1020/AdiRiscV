@@ -8,8 +8,7 @@ module branch_unit(
     input funct3_branch_e funct3,
     input opcode_e opcode,
     output logic branch_taken,
-    output logic [XLEN-1:0] branch_target,
-    output logic is_jump
+    output logic [XLEN-1:0] branch_target
 );
 
     timeunit 1ns;
@@ -23,7 +22,6 @@ module branch_unit(
     assign is_branch = (opcode == OP_BRANCH);
     assign is_jal = (opcode == OP_JAL);
     assign is_jalr = (opcode == OP_JALR);
-    assign is_jump = is_jal || is_jalr;
 
     always_comb begin
         condition_met = 1'b0;
@@ -50,6 +48,6 @@ module branch_unit(
     end
 
     // decision
-    assign branch_taken = is_jump || (is_branch && condition_met);
+    assign branch_taken = (is_jal || is_jalr) || (is_branch && condition_met);
     
 endmodule

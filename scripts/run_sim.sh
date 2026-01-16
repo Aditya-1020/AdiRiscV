@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./clean.sh
+./scripts/clean.sh
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <testbench_name> [commands_file] [snapshot_name]"
