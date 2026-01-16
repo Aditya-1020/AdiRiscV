@@ -81,8 +81,8 @@ module tb_pipelined;
         $dumpfile("pipelined.vcd");
         $dumpvars(0, tb_pipelined);
 
-        $display("\n========================================");
-        $display("RISC-V Pipelined Core Testbench");
+        $display("\n=========================================");
+        $display("              AdiRiscV TB");
         $display("=========================================\n");
 
         reset = 1;
@@ -99,7 +99,7 @@ module tb_pipelined;
         // Display final state
         // display_registers();
 
-        $display("\nAdiRISCV TEST VERIFICATION\n");
+        $display("\nAdiRISCV TEST\n");
 
 
         $display("Completion Markers:");
