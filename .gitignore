@@ -1,9 +1,6 @@
 .vscode/
 dump/
 
-stages.md
-TODU.md
-
 full_synthesis.log
 
 xelab.*
@@ -15,5 +12,7 @@ xsim.dir/
 
 sim/
 *.bit *.bin *.mcs *.wdb
+
+*.wdb
 
 riscv-venv/

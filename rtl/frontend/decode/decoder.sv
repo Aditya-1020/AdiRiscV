@@ -96,7 +96,7 @@ module decoder(
             OP_BRANCH: begin
                 ctrl.is_branch = 1'b1;
                 ctrl.alu_src = 1'b0;
-                // handled by branch_unit.sv for FUNCT3
+                $display("[DECODER] Branch! funct3=%03b setting is_branch=%b", funct3_bits, ctrl.is_branch);
             end
 
             OP_JAL: begin

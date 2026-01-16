@@ -15,7 +15,7 @@ module hazard_unit (
 
     output logic pc_stall,
     output logic if_id_stall, if_id_flush,
-    output logic id_ex_flush,
+    output logic id_ex_stall, id_ex_flush,
     output logic ex_mem_stall, ex_mem_flush,
     output logic mem_wb_stall, mem_wb_flush
 );
@@ -33,6 +33,7 @@ module hazard_unit (
         pc_stall = '0;
         if_id_stall = '0;
         if_id_flush = '0;
+        id_ex_stall = '0;
         id_ex_flush = '0;
         ex_mem_stall = '0;
         ex_mem_flush = '0;
@@ -42,12 +43,13 @@ module hazard_unit (
         if (load_use_hazard) begin
             pc_stall = 1'b1;
             if_id_stall = 1'b1;
-            id_ex_flush = 1'b1; // bubble in ex
+            id_ex_flush = 1'b1; // bubble in EX stage
         end
 
+        // control hazard
         if (branch_taken) begin
-            if_id_flush = 1'b1;
-            id_ex_flush = 1'b1;
+            if_id_flush = branch_taken;
+            id_ex_flush = branch_taken;
         end
     end
 

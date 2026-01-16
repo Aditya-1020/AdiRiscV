@@ -107,6 +107,13 @@ module ex_stage (
         .branch_target(branch_target)
     );
 
+    always_comb begin
+        if (id_ex_in.ctrl.is_branch) begin
+            $display("[EX] branch detected:\n rs1_fwd=0x%08h, rs2_fwd=0x%08h", rs1_fwd, rs2_fwd);
+            $display("  funct3=%03b, branchtaken=%b, targed=0x%08h", id_ex_in.funct3_for_branch, branch_taken, branch_target);
+        end
+    end
+
     // pack dis up
     // assign rs2_data_str = rs2_fwd;
     always_comb begin

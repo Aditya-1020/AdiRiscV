@@ -16,145 +16,135 @@ module tb_pipelined;
         .reset(reset)
     );
 
-    initial clk = 0;
-    always #5 clk = ~clk;
-
     task automatic load_hex(string filename);
         $readmemh(filename, dut.if_stage_inst.imem_inst.imem);
-        $display("Loading rogram from hex %s", filename);
+        $display("Loading program from hex %s", filename);
     endtask
 
     task automatic verify_loaded_program();
-        $display("Verifying loadedprogram");
-        for (int i= 0; i < 10; i++) begin
-            if (dut.if_stage_inst.imem_inst.imem[i] != NOP_INSTR) begin // !NOP
-                $display("imem[%0d] = 0x%08h", i, dut.if_stage_inst.imem_inst.imem[i]);
+        $display("Verifying loaded program");
+        $display("First 20 instructions:");
+        for (int i = 0; i < 20; i++) begin
+            if (dut.if_stage_inst.imem_inst.imem[i] != NOP_INSTR) begin
+                $display("  imem[%0d] = 0x%08h", i, dut.if_stage_inst.imem_inst.imem[i]);
             end
         end
-        $display("=========================\n");
-    endtask
-
-    task automatic run_cycles(int n);
-        $display("Running %0d clk cycles", n);
-        repeat(n) @(posedge clk);
-        $display("completed %0d cycles",n);
     endtask
 
     task automatic display_registers();
-        $display("\nRegfile state (time: %0t)", $time);
+        $display("\nFinal Register State (time: %0t)", $time);
         $display("PC = 0x%08h", dut.if_stage_inst.pc_inst.pc);
-        for (int i= 0; i < 32; i++) begin
-            if(dut.id_stage_inst.regfile_inst.registers[i] != 0) begin
-                $display("x%-2d: 0x%08h (%0d)",i, dut.id_stage_inst.regfile_inst.registers[i], 
+        $display("\nNon-zero Registers:");
+        for (int i = 0; i < 32; i++) begin
+            if (dut.id_stage_inst.regfile_inst.registers[i] != 0) begin
+                $display("  x%-2d = 0x%08h (%0d)", i, dut.id_stage_inst.regfile_inst.registers[i], 
                         $signed(dut.id_stage_inst.regfile_inst.registers[i]));
             end
         end
-        $display("=================================\n");
+        $display("=========================================\n");
     endtask
 
-
-    task automatic chek_register(int reg_num, logic [XLEN-1:0] expected);
+    task automatic check_register(int reg_num, logic [XLEN-1:0] expected, string test_name);
         logic [XLEN-1:0] actual;
         actual = dut.id_stage_inst.regfile_inst.registers[reg_num];
 
         if (actual == expected) begin
-            $display("PASSSSSSSSS: x%0d = 0x%08h", reg_num, actual);
+            $display("PASS: x%0d = 0x%08h (%s)", reg_num, actual, test_name);
         end else begin
-            $error("FAILL: x%0d expected = 0x%08h, got=0x%08h", reg_num, expected, actual);
+            $error("FAIL: x%0d expected 0x%08h, got 0x%08h (%s)", 
+                   reg_num, expected, actual, test_name);
         end
     endtask
 
+    // Monitor pipeline activity
+    /*
     initial begin
         forever begin
             @(posedge clk);
             #1;
-            if (!reset) begin
-                $display("[%0t] PC=0x%02h | IF/ID=0x%08h | ID/EX.rd=x%0d | EX/MEM.rd=x%0d alu=0x%08h | MEM/WB.rd=x%0d | WB: x%0d←0x%08h (en=%b)", 
+            if (!reset && $time < 500000) begin // Only show first 500ns to avoid clutter
+                $display("[%0t] PC=0x%02h | IF/ID=0x%08h | ID/EX.rd=x%0d | EX/MEM.rd=x%0d | MEM/WB.rd=x%0d | WB: x%0d←0x%08h (en=%b)", 
                     $time,
                     dut.if_stage_inst.pc_inst.pc,
                     dut.if_id_reg_out.instruction,
                     dut.id_ex_reg_out.rd_addr,
                     dut.ex_mem_out.rd_addr,
-                    dut.ex_mem_out.alu_result,
                     dut.mem_wb_out.rd_addr,
                     dut.wb_rd_addr,
                     dut.wb_write_data,
                     dut.wb_reg_write);
-
-                // $display("[%0t] Hazard: load_use=%b branch=%b | Stalls: pc=%b if_id=%b | Flushes: if_id=%b id_ex=%b", 
-                $display("[%0t] Hazard:  branch=%b | Stalls: pc=%b if_id=%b | Flushes: if_id=%b id_ex=%b", 
-                    $time,
-                    // dut.hazard_unit_inst.load_use_hazard,
-                    dut.branch_taken,
-                    dut.pc_stall,
-                    dut.if_id_stall,
-                    dut.if_id_flush,
-                    dut.id_ex_flush);
-            
-                $display("    Valid bits: if_id=%b id_ex=%b ex_mem=%b mem_wb=%b",
-                    dut.if_id_reg_out.valid_if_id,
-                    dut.id_ex_reg_out.valid_id_ex,
-                    dut.ex_mem_out.valid_ex_mem,
-                    dut.mem_wb_out.valid_mem_wb);
-                
-                $display("    Ctrl signals: reg_write=%b alu_op=%s",
-                        dut.id_ex_reg_out.ctrl.reg_write,
-                        dut.id_ex_reg_out.ctrl.alu_op.name());
             end
         end
     end
-
+    */
     initial begin
         $dumpfile("pipelined.vcd");
         $dumpvars(0, tb_pipelined);
 
-
         $display("\n========================================");
         $display("RISC-V Pipelined Core Testbench");
-        $display("========================================\n");
+        $display("=========================================\n");
 
         reset = 1;
 
-        load_hex("programs/add.hex");
+        load_hex("programs/TEST.hex");
         verify_loaded_program();
         
-        // reset seq
-        $display("Applying reset");
+        // reset
         repeat(3) @(posedge clk);
         reset = 0;
-        $display("Reset released\n");
 
-        // Run program
-        run_cycles(20);
+        repeat(200) @(posedge clk);
 
-        display_registers();
+        // Display final state
+        // display_registers();
 
-        $display("=== Verification ===");
-        if (dut.id_stage_inst.regfile_inst.registers[1] == 32'd5)
-            $display("✓ x1 = 5");
-        else
-            $error("✗ x1 = %0d (expected 5)", dut.id_stage_inst.regfile_inst.registers[1]);
-            
-        if (dut.id_stage_inst.regfile_inst.registers[2] == 32'd3)
-            $display("✓ x2 = 3");
-        else
-            $error("✗ x2 = %0d (expected 3)", dut.id_stage_inst.regfile_inst.registers[2]);
-            
-        if (dut.id_stage_inst.regfile_inst.registers[3] == 32'd8)
-            $display("✓ x3 = 8");
-        else
-            $error("✗ x3 = %0d (expected 8)", dut.id_stage_inst.regfile_inst.registers[3]);
+        $display("\nAdiRISCV TEST VERIFICATION\n");
 
-        $display("\n TEST COOMPLETE");
+
+        $display("Completion Markers:");
+        check_register(15, 32'd3,    "Loop counter");
+        check_register(18, 32'h000000AA, "Test marker 1");
+        check_register(19, 32'h000000BB, "Test marker 2");
+        check_register(20, 32'h000000CC, "Test marker 3");
+        
+        $display("\nArithmetic Tests:");
+        
+        $display("\nForwarding Chain Tests:");
+        check_register(5, 32'd1, "Forwarding start");
+        check_register(6, 32'd2, "EX-EX forwarding");
+        check_register(7, 32'd4, "EX-EX forwarding");
+        check_register(8, 32'd8, "EX-EX forwarding");
+        
+        $display("\nBranch Tests:");
+        check_register(23, 32'd1, "BEQ taken");
+        check_register(26, 32'd2, "BEQ not taken");
+        check_register(27, 32'd3, "BNE taken");
+        check_register(28, 32'd4, "BLT taken");
+        check_register(29, 32'd5, "BGE taken");
+        
+
+        $display("\nUnsigned Comparison Tests:");
+        check_register(9,  32'hFFFFFFFF, "Unsigned value 0xFFFFFFFF");
+        check_register(10, 32'd1, "Unsigned value 1");
+        check_register(11, 32'd1, "SLTU result (1 < 0xFFFFFFFF)");
+        check_register(12, 32'd0, "SLTU result (0xFFFFFFFF >= 1)");
+        check_register(13, 32'd6, "BLTU branch taken");
+        check_register(14, 32'd7, "BGEU branch taken");
+        
+        $display("\nMemory and Sign Extension Tests:");
+        check_register(1,  32'h000000FF, "LBU (zero extended)");
+        check_register(31, 32'hFFFFFFFF, "LB (sign extended)");
+        
+        $display("\n\nTEST COMPLETE");
 
         $finish;
     end
 
     initial begin
-        #10000;
+        #100000;
         $error("TIMEOUT: Tb did not compile in time");
         $finish;
     end
-
 
 endmodule
