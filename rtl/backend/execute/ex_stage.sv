@@ -11,9 +11,9 @@ module ex_stage (
     input logic mem_reg_write,
 
     // fwd from wb
-    input logic [XLEN-1:0] wb_wr_data,
+    input logic [XLEN-1:0] wb_write_data,
     input logic [REG_ADDR_WIDTH-1:0] wb_rd_addr,
-    input logic wb_reg_wr,
+    input logic wb_reg_write,
 
     // brach out -> IF and hazard
     output logic branch_taken,
@@ -25,8 +25,7 @@ module ex_stage (
     timeunit 1ns;
     timeprecision 1ps;
 
-
-    logic [XLEN-1:0] alu_a, alu_b, 
+    logic [XLEN-1:0] alu_a, alu_b;
     logic [XLEN-1:0] alu_result;
     logic alu_zero;
 
@@ -43,7 +42,7 @@ module ex_stage (
     logic is_jump;
 
     assign is_jump = id_ex_in.ctrl.is_jump;
-    assign opcode = opcode_e'(is_jump ? (id_ex_in.is_jalr ? OP_JALR : OP_JAL) : id_ex_in.is_branch ? OP_BRANCH : OP_IMM);
+    assign opcode = opcode_e'(is_jump ? (id_ex_in.ctrl.is_jalr ? OP_JALR : OP_JAL) : id_ex_in.ctrl.is_branch ? OP_BRANCH : OP_IMM);
     assign funct3_branch = funct3_branch_e'(id_ex_in.funct3_for_branch);
 
     // forwarding unit
@@ -51,9 +50,9 @@ module ex_stage (
         .id_ex_rs1_addr(id_ex_in.rs1_addr),
         .id_ex_rs2_addr(id_ex_in.rs2_addr),
         .ex_mem_rd_addr(mem_rd_addr),
-        .ex_mem_reg_wr(mem_reg_write),
+        .ex_mem_reg_write(mem_reg_write),
         .mem_wb_rd_addr(wb_rd_addr),
-        .mem_wb_reg_wr(wb_reg_wr),
+        .mem_wb_reg_write(wb_reg_write),
         .forward_a(forward_a),
         .forward_b(forward_b)
     );
@@ -61,18 +60,18 @@ module ex_stage (
     // forward to rs1
     always_comb begin
         case (forward_a)
-            FWD_MEM: rs1_fwd: mem_alu_result; // from EX/MEM
-            FWD_WB: rs1_fwd: wb_wr_data; // from MEM/WB
-            default: rs1_fwd: id_ex_in.rs1_data; // no forward
+            FWD_MEM: rs1_fwd = mem_alu_result; // from EX/MEM
+            FWD_WB: rs1_fwd = wb_write_data; // from MEM/WB
+            default: rs1_fwd = id_ex_in.rs1_data; // no forward
         endcase
     end
 
     // forward to rs2
     always_comb begin
         case (forward_b)
-            FWD_MEM: rs2_fwd: mem_alu_result; // from EX/MEM
-            FWD_WB: rs2_fwd: wb_wr_data; // from MEM/WB
-            default: rs2_fwd: id_ex_in.rs2_data; // no forward
+            FWD_MEM: rs2_fwd = mem_alu_result; // from EX/MEM
+            FWD_WB: rs2_fwd = wb_write_data; // from MEM/WB
+            default: rs2_fwd = id_ex_in.rs2_data; // no forward
         endcase
     end
 
@@ -94,7 +93,7 @@ module ex_stage (
         .b(alu_b),
         .op(id_ex_in.ctrl.alu_op),
         .zero(alu_zero),
-        .reset(alu_result)
+        .result(alu_result)
     );
 
     branch_unit branch_unit_inst (

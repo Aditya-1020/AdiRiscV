@@ -4,7 +4,7 @@ module if_id_reg (
     input logic clk,
     input logic reset,
     input logic stall, // hold values
-    input logic flush // insert bubble (NOP)
+    input logic flush, // insert bubble (NOP)
     input if_id_reg_t in,
     output if_id_reg_t out
 );

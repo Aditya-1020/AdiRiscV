@@ -7,8 +7,8 @@ module id_stage (
     
     // WB (regifle)
     input logic [REG_ADDR_WIDTH-1:0] wb_rd_addr,
-    input logic [XLEN-1:0] wb_wr_data,
-    input logic wb_reg_wr,
+    input logic [XLEN-1:0] wb_write_data,
+    input logic wb_reg_write,
     
     output id_ex_reg_t id_ex_out
 );
@@ -22,9 +22,9 @@ module id_stage (
     logic [2:0] funct3_branch;
 
 
-    assign rs1_addr = instruction[19:15];
-    assign rs2_addr = instruction[24:20];
-    assign rd_addr = instruction[11:7];
+    assign rs1_addr = if_id_in.instruction[19:15];
+    assign rs2_addr = if_id_in.instruction[24:20];
+    assign rd_addr = if_id_in.instruction[11:7];
 
     assign funct3_branch = if_id_in.instruction[14:12];
 
@@ -35,10 +35,10 @@ module id_stage (
         .rs1_addr(rs1_addr),
         .rs2_addr(rs2_addr),
         .rd(wb_rd_addr), // WB
-        .write_data(wb_wr_data), // WB
-        .wr_en(wb_reg_wr), // WB
+        .write_data(wb_write_data), // WB
+        .wr_en(wb_reg_write), // WB
         .rs1_data(rs1_data),
-        .rs1_data(rs2_data)
+        .rs2_data(rs2_data)
     );
     
     // decoder

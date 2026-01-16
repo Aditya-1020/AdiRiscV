@@ -4,7 +4,7 @@ module if_stage (
     input logic clk,
     input logic reset,
     input logic branch_taken, // from EX
-    input logic [XLEN-1:0] branch_target // From EX
+    input logic [XLEN-1:0] branch_target, // From EX
     input logic pc_stall, // hazard unit
     output if_id_reg_t if_id_out
 );

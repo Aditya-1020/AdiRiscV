@@ -4,7 +4,7 @@ module id_ex_stage (
     input logic clk,
     input logic reset,
     input logic stall, // hold values
-    input logic flush // insert bubble (NOP)
+    input logic flush, // insert bubble (NOP)
     input id_ex_reg_t in, // from id
     output id_ex_reg_t out // to ex
 );
