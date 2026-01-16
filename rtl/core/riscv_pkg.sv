@@ -153,7 +153,6 @@ package riscv_pkg;
         FWD_MEM     = 2'b10     // Forward from MEM stage
     } forward_src_e;
 
-    
     // Branch Prediction
     
     // Branch Target Buffer parameters
@@ -213,6 +212,7 @@ package riscv_pkg;
         logic [XLEN-1:0] rs1_data;
         logic [XLEN-1:0] rs2_data;
         logic [XLEN-1:0] immediate;
+        logic [2:0] funct3_for_branch;
         logic [REG_ADDR_WIDTH-1:0] rs1_addr;
         logic [REG_ADDR_WIDTH-1:0] rs2_addr;
         logic [REG_ADDR_WIDTH-1:0] rd_addr;
