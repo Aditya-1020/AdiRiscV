@@ -22,6 +22,7 @@ module branch_unit(
     assign is_branch = (opcode == OP_BRANCH);
     assign is_jal = (opcode == OP_JAL);
     assign is_jalr = (opcode == OP_JALR);
+    assign is_jump = (is_jal || is_jalr);
 
     always_comb begin
         condition_met = 1'b0;
@@ -48,6 +49,6 @@ module branch_unit(
     end
 
     // decision
-    assign branch_taken = (is_jal || is_jalr) || (is_branch && condition_met);
+    assign branch_taken = is_jump || (is_branch && condition_met);
     
 endmodule

@@ -14,6 +14,6 @@ xsim.dir/
 *.vcd *.vpd *.snap *.mld
 
 sim/
-*.bit *.bin *.mcs
+*.bit *.bin *.mcs *.wdb
 
 riscv-venv/

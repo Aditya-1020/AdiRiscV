@@ -136,6 +136,7 @@ module riscv_pipelined_core (
         .wb_reg_write(wb_reg_write)
     );
 
+    /*
     // Hazard detection unit (TODO - implement next)
     hazard_unit hazard_unit_inst (
       .id_ex_rs1_addr(id_ex_reg_out.rs1_addr),
@@ -155,17 +156,17 @@ module riscv_pipelined_core (
       .mem_wb_stall(mem_wb_stall),
       .mem_wb_flush(mem_wb_flush)
     );
+    */
 
     // // TEMP DEBUG
-    // assign pc_stall = 1'b0;
-    // assign if_id_stall = 1'b0;
-    // assign if_id_flush = 1'b0;
-    // assign id_ex_stall = 1'b0;
-    // assign id_ex_flush = 1'b0;
-    // assign ex_mem_stall = 1'b0;
-    // assign ex_mem_flush = 1'b0;
-    // assign mem_wb_stall = 1'b0;
-    // assign mem_wb_flush = 1'b0;
+    assign pc_stall = 1'b0;
+    assign if_id_stall = 1'b0;
+    assign if_id_flush = 1'b0;
+    assign id_ex_flush = 1'b0;
+    assign ex_mem_stall = 1'b0;
+    assign ex_mem_flush = 1'b0;
+    assign mem_wb_stall = 1'b0;
+    assign mem_wb_flush = 1'b0;
 
 
 endmodule

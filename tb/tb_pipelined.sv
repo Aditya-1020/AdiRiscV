@@ -80,6 +80,26 @@ module tb_pipelined;
                     dut.wb_rd_addr,
                     dut.wb_write_data,
                     dut.wb_reg_write);
+
+                // $display("[%0t] Hazard: load_use=%b branch=%b | Stalls: pc=%b if_id=%b | Flushes: if_id=%b id_ex=%b", 
+                $display("[%0t] Hazard:  branch=%b | Stalls: pc=%b if_id=%b | Flushes: if_id=%b id_ex=%b", 
+                    $time,
+                    // dut.hazard_unit_inst.load_use_hazard,
+                    dut.branch_taken,
+                    dut.pc_stall,
+                    dut.if_id_stall,
+                    dut.if_id_flush,
+                    dut.id_ex_flush);
+            
+                $display("    Valid bits: if_id=%b id_ex=%b ex_mem=%b mem_wb=%b",
+                    dut.if_id_reg_out.valid_if_id,
+                    dut.id_ex_reg_out.valid_id_ex,
+                    dut.ex_mem_out.valid_ex_mem,
+                    dut.mem_wb_out.valid_mem_wb);
+                
+                $display("    Ctrl signals: reg_write=%b alu_op=%s",
+                        dut.id_ex_reg_out.ctrl.reg_write,
+                        dut.id_ex_reg_out.ctrl.alu_op.name());
             end
         end
     end
