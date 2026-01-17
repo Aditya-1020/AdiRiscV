@@ -48,8 +48,8 @@ module hazard_unit (
 
         // control hazard
         if (branch_taken) begin
-            if_id_flush = branch_taken;
-            id_ex_flush = branch_taken;
+            if_id_flush = 1'b1;
+            id_ex_flush = 1'b1;
         end
     end
 
