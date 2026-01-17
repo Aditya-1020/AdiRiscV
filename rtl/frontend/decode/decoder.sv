@@ -31,21 +31,36 @@ module decoder(
         };
 
         case (opcode)
-            OP_OP: begin // R-type
+            OP_OP: begin // R-type (includes M extension)
                 ctrl.reg_write = 1'b1;
                 ctrl.alu_src = 1'b0;
-                case (funct3_bits)
-                    F3_ADD_SUB: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SUB : ALU_ADD;
-                    F3_SLL: ctrl.alu_op = ALU_SLL;
-                    F3_SLT: ctrl.alu_op = ALU_SLT;
-                    F3_SLTU: ctrl.alu_op = ALU_SLTU;
-                    F3_XOR: ctrl.alu_op = ALU_XOR;
-                    F3_SRL_SRA: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SRA : ALU_SRL;
-                    F3_OR: ctrl.alu_op = ALU_OR;
-                    F3_AND: ctrl.alu_op = ALU_AND;
-                    default: ctrl.alu_op = ALU_ADD;
-                endcase
+                if (funct7_bits == F7_MULDIV) begin
+                    case (funct3_bits)
+                        F3_MUL    : ctrl.alu_op = ALU_MUL;
+                        F3_MULH   : ctrl.alu_op = ALU_MULH;
+                        F3_MULHSU : ctrl.alu_op = ALU_MULHSU;
+                        F3_MULHU  : ctrl.alu_op = ALU_MULHU;
+                        F3_DIV    : ctrl.alu_op = ALU_DIV;
+                        F3_DIVU   : ctrl.alu_op = ALU_DIVU;
+                        F3_REM    : ctrl.alu_op = ALU_REM;
+                        F3_REMU   : ctrl.alu_op = ALU_REMU;
+                        default   : ctrl.alu_op = ALU_ADD;
+                    endcase
+                end else begin
+                    case (funct3_bits)
+                        F3_ADD_SUB: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SUB : ALU_ADD;
+                        F3_SLL: ctrl.alu_op = ALU_SLL;
+                        F3_SLT: ctrl.alu_op = ALU_SLT;
+                        F3_SLTU: ctrl.alu_op = ALU_SLTU;
+                        F3_XOR: ctrl.alu_op = ALU_XOR;
+                        F3_SRL_SRA: ctrl.alu_op = (funct7_bits == F7_ALT) ? ALU_SRA : ALU_SRL;
+                        F3_OR: ctrl.alu_op = ALU_OR;
+                        F3_AND: ctrl.alu_op = ALU_AND;
+                        default: ctrl.alu_op = ALU_ADD;
+                    endcase
+                end
             end
+
 
             OP_IMM: begin // I-type
                 ctrl.reg_write = 1'b1;

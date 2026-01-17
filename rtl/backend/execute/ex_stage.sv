@@ -19,7 +19,8 @@ module ex_stage (
     output logic branch_taken,
     output logic [XLEN-1:0] branch_target,
 
-    output ex_mem_reg_t ex_mem_out
+    output ex_mem_reg_t ex_mem_out,
+    output logic ex_stall
 );
 
     timeunit 1ns;
@@ -27,14 +28,13 @@ module ex_stage (
 
     logic [XLEN-1:0] alu_a, alu_b;
     logic [XLEN-1:0] alu_result;
-    logic alu_zero;
+    logic alu_zero, alu_ready;
 
     logic [XLEN-1:0] rs1_fwd, rs2_fwd;
     // logic [XLEN-1:0] rs2_data_str; // rs2 after forwarding
 
     // forwarding control singals
     forward_src_e forward_a, forward_b;
-
 
     // From id/ex
     opcode_e opcode;
@@ -89,11 +89,14 @@ module ex_stage (
     assign alu_b = id_ex_in.ctrl.alu_src ? id_ex_in.immediate : rs2_fwd;
 
     alu alu_inst (
+        .clk(clk),
+        .reset(reset),
         .a(alu_a),
         .b(alu_b),
         .op(id_ex_in.ctrl.alu_op),
         .zero(alu_zero),
-        .result(alu_result)
+        .result(alu_result),
+        .ready(alu_ready)
     );
 
     branch_unit branch_unit_inst (
@@ -114,7 +117,7 @@ module ex_stage (
         ex_mem_out.rs2_data_str = rs2_fwd; // for stores
         ex_mem_out.rd_addr = id_ex_in.rd_addr;
         ex_mem_out.ctrl = id_ex_in.ctrl;
-        ex_mem_out.valid_ex_mem = id_ex_in.valid_id_ex;
+        ex_mem_out.valid_ex_mem = id_ex_in.valid_id_ex && alu_ready;
     end
 
 endmodule

@@ -12,6 +12,7 @@ module hazard_unit (
     input logic [REG_ADDR_WIDTH-1:0] if_id_rs2_addr,
     
     input logic branch_taken, // ex
+    input logic ex_stall,
 
     output logic pc_stall,
     output logic if_id_stall, if_id_flush,
@@ -40,14 +41,18 @@ module hazard_unit (
         mem_wb_stall = '0;
         mem_wb_flush = '0;
 
-        if (load_use_hazard) begin
+        if (ex_stall) begin // Division stall
+            pc_stall= 1'b1;
+            if_id_stall = 1'b1;
+            id_ex_stall = 1'b1;
+            ex_mem_stall = 1'b1;
+            ex_mem_stall = 1'b1;
+            mem_wb_stall = 1'b1;
+        end else if (load_use_hazard) begin
             pc_stall = 1'b1;
             if_id_stall = 1'b1;
             id_ex_flush = 1'b1; // bubble in EX stage
-        end
-
-        // control hazard
-        if (branch_taken) begin
+        end else if (branch_taken) begin // control hazard
             if_id_flush = 1'b1;
             id_ex_flush = 1'b1;
         end

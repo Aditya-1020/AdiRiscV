@@ -6,6 +6,7 @@ package riscv_pkg;
 
     // Basic Architecture Parameters
     parameter int XLEN = 32;
+    parameter int XLEN_DOUBLE = 64;
     parameter REG_ADDR_WIDTH = 5;
     parameter int NUM_REGS = 2**REG_ADDR_WIDTH; // 32
     parameter int IMEM_SIZE = 1024;      // Instructions (words)
@@ -42,23 +43,34 @@ package riscv_pkg;
     } instr_fmt_e;
 
     // ALU Operations
-    typedef enum logic [3:0] {
-        ALU_ADD     = 4'b0000,
-        ALU_SUB     = 4'b0001,
-        ALU_SLL     = 4'b0010,
-        ALU_SLT     = 4'b0011,
-        ALU_SLTU    = 4'b0100,
-        ALU_XOR     = 4'b0101,
-        ALU_SRL     = 4'b0110,
-        ALU_SRA     = 4'b0111,
-        ALU_OR      = 4'b1000,
-        ALU_AND     = 4'b1001,
-        ALU_PASS_A  = 4'b1010,  // For LUI/AUIPC
-        ALU_PASS_B  = 4'b1011   // For LUI
+    typedef enum logic [4:0] {
+        // Base RV32I ALU operations
+        ALU_ADD     = 5'b00000,
+        ALU_SUB     = 5'b00001,
+        ALU_SLL     = 5'b00010,
+        ALU_SLT     = 5'b00011,
+        ALU_SLTU    = 5'b00100,
+        ALU_XOR     = 5'b00101,
+        ALU_SRL     = 5'b00110,
+        ALU_SRA     = 5'b00111,
+        ALU_OR      = 5'b01000,
+        ALU_AND     = 5'b01001,
+        ALU_PASS_A  = 5'b01010,  // For AUIPC
+        ALU_PASS_B  = 5'b01011,  // For LUI
+        
+        // M Extension - Multiply
+        ALU_MUL     = 5'b10000,
+        ALU_MULH    = 5'b10001,
+        ALU_MULHSU  = 5'b10010,
+        ALU_MULHU   = 5'b10011,
+        
+        // M Extension - Divide/Remainder
+        ALU_DIV     = 5'b10100,
+        ALU_DIVU    = 5'b10101,
+        ALU_REM     = 5'b10110,
+        ALU_REMU    = 5'b10111 
     } alu_op_e;
 
-
-    // Function 3 Fields (3-bit)
     
     // FUNCT3 for ALU operations (R-type and I-type)
     typedef enum logic [2:0] {
@@ -71,6 +83,18 @@ package riscv_pkg;
         F3_OR       = 3'b110,
         F3_AND      = 3'b111
     } funct3_alu_e;
+
+    // FUNCT3 for M Extension operations
+    typedef enum logic [2:0] {
+        F3_MUL      = 3'b000,
+        F3_MULH     = 3'b001,
+        F3_MULHSU   = 3'b010,
+        F3_MULHU    = 3'b011,
+        F3_DIV      = 3'b100,
+        F3_DIVU     = 3'b101,
+        F3_REM      = 3'b110,
+        F3_REMU     = 3'b111
+    } funct3_m_e;
     
     // FUNCT3 for Load operations
     typedef enum logic [2:0] {
@@ -101,7 +125,8 @@ package riscv_pkg;
     // Function 7 Fields (7-bit)
     typedef enum logic [6:0] {
         F7_NORMAL   = 7'b0000000,
-        F7_ALT      = 7'b0100000   // For SUB and SRA
+        F7_ALT      = 7'b0100000,   // For SUB and SRA
+        F7_MULDIV   = 7'b0000001   // M Extension instr compare
     } funct7_e;
 
     // Memory Operations (Load/Store Unit)
@@ -185,6 +210,7 @@ package riscv_pkg;
         logic load_use;         // Load-use hazard detected
         logic control;          // Control hazard (branch/jump)
         logic structural;       // Structural hazard (future: cache miss)
+        logic division; // Division stall (M extension)
     } hazard_t;
 
     // Cache Parameters

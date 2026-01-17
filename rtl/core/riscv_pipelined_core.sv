@@ -24,6 +24,7 @@ module riscv_pipelined_core (
     logic ex_mem_stall, ex_mem_flush;
     logic mem_wb_stall, mem_wb_flush;
     logic pc_stall;
+    logic ex_stall; // Div stall signal
 
     // WB stage
     logic [REG_ADDR_WIDTH-1:0] wb_rd_addr;
@@ -95,7 +96,8 @@ module riscv_pipelined_core (
         
         .branch_taken(branch_taken),
         .branch_target(branch_target),
-        .ex_mem_out(ex_stage_out)
+        .ex_mem_out(ex_stage_out),
+        .ex_stall(ex_stall)
     );
 
     // EX/MEM register
@@ -147,6 +149,7 @@ module riscv_pipelined_core (
       .if_id_rs1_addr(if_id_reg_out.instruction[19:15]),
       .if_id_rs2_addr(if_id_reg_out.instruction[24:20]),
       .branch_taken(branch_taken),
+      .ex_stall(ex_stall),
       .pc_stall(pc_stall),
       .if_id_stall(if_id_stall),
       .if_id_flush(if_id_flush),
