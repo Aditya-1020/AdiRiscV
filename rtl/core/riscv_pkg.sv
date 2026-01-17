@@ -13,6 +13,7 @@ package riscv_pkg;
     parameter int DMEM_SIZE = 4096;      // Data (bytes)
     parameter int WORD_ADDR_WIDTH = 10;
     parameter int BYTE_ADDR_WIDTH = 12;
+    parameter int COUNT_SIZE_DIVISOR = $clog2(XLEN);
     
     parameter logic [XLEN-1:0] RESET_PC = 32'h00000000;
     parameter logic [XLEN-1:0] RESET_REG = 32'h00000000;

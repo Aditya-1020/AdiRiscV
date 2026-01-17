@@ -29,20 +29,14 @@ module alu (
     logic div_start, div_is_signed, div_is_rem;
     logic [XLEN-1:0] div_result;
     logic div_done, div_busy;
+    logic [XLEN-1:0] divider_remainder_out;
 
     logic is_div_op;
     assign is_div_op = (op == ALU_DIV) || (op == ALU_DIVU) || (op == ALU_REM) || (op == ALU_REMU);
 
-    logic div_op_last;
-    always_ff @(posedge clk) begin
-        if (reset) begin
-            div_op_last <= 1'b0;
-        end else begin
-            div_op_last <= is_div_op;
-        end
-    end
 
-    assign div_start = is_div_op && !div_op_last && !div_busy;
+    // assign div_start = is_div_op && !div_op_last && !div_busy;
+    assign div_start = is_div_op && !div_busy && !div_done;
     assign div_is_signed = (op == ALU_DIV) || (op == ALU_REM);
     assign div_is_rem = (op == ALU_REM) || (op == ALU_REMU);
 
@@ -55,6 +49,7 @@ module alu (
         .dividend(a),
         .divisor(b),
         .result(div_result),
+        .remainder_out(divider_remainder_out),
         .done(div_done),
         .busy(div_busy)
     );
@@ -75,13 +70,14 @@ module alu (
             ALU_PASS_B: result = b;
             
             // Multiply
-            ALU_MUL: result = mul_signed[31:0];
-            ALU_MULH: result = mul_signed[63:32];
-            ALU_MULHSU: result = mul_mixed[63:32];
-            ALU_MULHU: result = mul_unsigned[63:32];
+            ALU_MUL: result = mul_signed[XLEN-1:0];                //[31:0]
+            ALU_MULH: result = mul_signed[XLEN_DOUBLE-1:XLEN];     //[63:32]
+            ALU_MULHSU: result = mul_mixed[XLEN_DOUBLE-1:XLEN];    //[63:32]
+            ALU_MULHU: result = mul_unsigned[XLEN_DOUBLE-1:XLEN];  //[63:32]
 
             // Divide
-            ALU_DIV, ALU_DIVU, ALU_REM, ALU_REMU: result = div_result;
+            ALU_DIV, ALU_DIVU: result = div_result;
+            ALU_REM, ALU_REMU: result = divider_remainder_out;
             default: result = a + b;
         endcase
 

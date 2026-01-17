@@ -14,7 +14,6 @@ module tb_mtype;
     int pass_count = 0;
     int fail_count = 0;
 
-    initial clk = 0;
     always #5 clk = ~clk;
 
     alu dut (
@@ -28,7 +27,6 @@ module tb_mtype;
         .ready(ready)
     );
 
-
      task automatic test_op(
         input logic [31:0] val_a,
         input logic [31:0] val_b,
@@ -36,11 +34,15 @@ module tb_mtype;
         input logic [31:0] expected,
         input string name
     );
+        op = ALU_ADD;
+        @(posedge clk);
+        #5;
+
         a = val_a;
         b = val_b;
         op = operation;
         
-        // Wait for result to be ready
+        #1;
         wait(ready);
         @(posedge clk);
         #1;
@@ -71,13 +73,15 @@ module tb_mtype;
         $dumpvars(0, tb_mtype);
         
         reset = 1;
+        clk = 0;
         a = 0;
         b = 0;
         op = ALU_ADD;
         
-        repeat(3) @(posedge clk);
+        repeat(2) @(posedge clk);
         reset = 0;
         repeat(1) @(posedge clk);
+
         
         $display("RV32M Test");
         
@@ -105,7 +109,6 @@ module tb_mtype;
         // DIVISION Test
         $display("\nDIV Test (signed)");
         test_op(32'd20, 32'd3, ALU_DIV, 32'd6, "DIV: 20 / 3");
-
         test_op(-32'd20, 32'd3, ALU_DIV, -32'd6, "DIV: -20 / 3");
         test_op(32'd20, -32'd3, ALU_DIV, -32'd6, "DIV: 20 / -3");
         test_op(-32'd20, -32'd3, ALU_DIV, 32'd6, "DIV: -20 / -3");
