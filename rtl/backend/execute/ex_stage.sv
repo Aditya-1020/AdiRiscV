@@ -31,7 +31,6 @@ module ex_stage (
     logic alu_zero, alu_ready;
 
     logic [XLEN-1:0] rs1_fwd, rs2_fwd;
-    // logic [XLEN-1:0] rs2_data_str; // rs2 after forwarding
 
     // forwarding control singals
     forward_src_e forward_a, forward_b;
@@ -109,6 +108,8 @@ module ex_stage (
         .branch_taken(branch_taken),
         .branch_target(branch_target)
     );
+
+    assign ex_stall = !alu_ready; // alu not ready -> stall
 
     // pack dis up
     // assign rs2_data_str = rs2_fwd;

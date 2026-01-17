@@ -18,6 +18,8 @@ module tb_mtype;
     always #5 clk = ~clk;
 
     alu dut (
+        .clk(clk),
+        .reset(reset),
         .a(a),
         .b(b),
         .op(op),
@@ -103,6 +105,7 @@ module tb_mtype;
         // DIVISION Test
         $display("\nDIV Test (signed)");
         test_op(32'd20, 32'd3, ALU_DIV, 32'd6, "DIV: 20 / 3");
+
         test_op(-32'd20, 32'd3, ALU_DIV, -32'd6, "DIV: -20 / 3");
         test_op(32'd20, -32'd3, ALU_DIV, -32'd6, "DIV: 20 / -3");
         test_op(-32'd20, -32'd3, ALU_DIV, 32'd6, "DIV: -20 / -3");
