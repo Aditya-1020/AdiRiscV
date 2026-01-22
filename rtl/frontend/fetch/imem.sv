@@ -1,29 +1,38 @@
 import riscv_pkg::*;
 
 module imem(
+    input logic clk,
     input logic [WORD_ADDR_WIDTH-1:0] address, // word addressed
     output logic [XLEN-1:0] instruction
 );
     timeunit 1ns; timeprecision 1ps;
 
-    logic [XLEN-1:0] imem [0:IMEM_SIZE-1];
+    (* ram_style = "block" *) logic [XLEN-1:0] imem [0:IMEM_SIZE-1];
+    
+    // logic [XLEN-1:0] imem [0:IMEM_SIZE-1];
 
-    //NOTE: you can use (* ramstyle = "block" *) logic [XLEN-1:0] mem[0:IMEM_SIZE-1]; // for fpga later
+    logic [XLEN-1:0] instruction_reg;
 
-    // combination read -- NOTE: more preffered
-    /*
-    always_comb begin
+    // sychronous read forBRAM interface
+    always_ff @(posedge clk) begin
         if (address < IMEM_SIZE) begin
-            instruction = imem[address];
+            instruction_reg <= imem[address];
         end else begin
-            instruction = NOP_INSTR;
+            instruction_reg <= NOP_INSTR;
         end
     end
-    */
+
     /*
-    NOTE:
-    - direct assigns better since address < IMEM_SIZE is always true and renders the else as unusable
+    NOTE: Tried doing combination read but 
+        - direct assigns better since address < IMEM_SIZE is always true and renders the else as unusable
     */
-    assign instruction = imem[address];
+    assign instruction = instruction_reg;
+
+    // INitialize for BRAM
+    initial begin
+        for (int i = 0; i < IMEM_SIZE; i++) begin
+            imem[i] = NOP_INSTR;
+        end
+    end
     
 endmodule

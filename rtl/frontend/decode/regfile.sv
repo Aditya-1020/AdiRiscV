@@ -14,7 +14,8 @@ module regfile (
     timeunit 1ns;
     timeprecision 1ps;
     
-    logic [XLEN-1:0] registers [0:NUM_REGS-1];
+    // logic [XLEN-1:0] registers [0:NUM_REGS-1];
+    (* ram_style = "distributed" *) logic [XLEN-1:0] registers [1:NUM_REGS-1]; 
 
     always_ff @(posedge clk) begin
         if (reset) begin

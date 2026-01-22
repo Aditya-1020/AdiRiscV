@@ -34,6 +34,7 @@ module if_stage (
     assign imem_addr = pc[WORD_ADDR_WIDTH+1:2]; // convert byte address to word address
 
     imem imem_inst (
+        .clk(clk),
         .address(imem_addr),
         .instruction(instruction)
     );
