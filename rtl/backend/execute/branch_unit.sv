@@ -10,14 +10,16 @@ module branch_unit(
     output logic branch_taken,
     output logic [XLEN-1:0] branch_target
 );
-
     timeunit 1ns;
     timeprecision 1ps;
+
+    localparam logic [XLEN-1:0] JALR_ALIGN_MASK = ~32'h1;
 
     logic condition_met;
     logic is_branch;
     logic is_jal;
     logic is_jalr;
+    logic is_jump;
 
     assign is_branch = (opcode == OP_BRANCH);
     assign is_jal = (opcode == OP_JAL);
@@ -40,13 +42,16 @@ module branch_unit(
         end
     end
 
-    always_comb begin
-        if (is_jalr) begin
-            branch_target = (rs1_data + imm) & ~32'h1; // clearn lsb for alignment
-        end else begin
-            branch_target = pc + imm;
-        end
-    end
+    // always_comb begin
+    //     if (is_jalr) begin
+    //         branch_target = (rs1_data + imm) & ~32'h1; // clearn lsb for alignment
+    //     end else begin
+    //         branch_target = pc + imm;
+    //     end
+    // end
+
+    // Jump target
+    assign branch_target = is_jalr ? ((rs1_data + imm) & JALR_ALIGN_MASK) : (pc + imm);
 
     // decision
     assign branch_taken = is_jump || (is_branch && condition_met);

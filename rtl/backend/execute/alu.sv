@@ -34,8 +34,6 @@ module alu (
     logic is_div_op;
     assign is_div_op = (op == ALU_DIV) || (op == ALU_DIVU) || (op == ALU_REM) || (op == ALU_REMU);
 
-
-    // assign div_start = is_div_op && !div_op_last && !div_busy;
     assign div_start = is_div_op && !div_busy && !div_done;
     assign div_is_signed = (op == ALU_DIV) || (op == ALU_REM);
     assign div_is_rem = (op == ALU_REM) || (op == ALU_REMU);
@@ -70,10 +68,10 @@ module alu (
             ALU_PASS_B: result = b;
             
             // Multiply
-            ALU_MUL: result = mul_signed[XLEN-1:0];                //[31:0]
-            ALU_MULH: result = mul_signed[XLEN_DOUBLE-1:XLEN];     //[63:32]
-            ALU_MULHSU: result = mul_mixed[XLEN_DOUBLE-1:XLEN];    //[63:32]
-            ALU_MULHU: result = mul_unsigned[XLEN_DOUBLE-1:XLEN];  //[63:32]
+            ALU_MUL: result = mul_signed[XLEN-1:0];                // [31:0]
+            ALU_MULH: result = mul_signed[XLEN_DOUBLE-1:XLEN];     // [63:32]
+            ALU_MULHSU: result = mul_mixed[XLEN_DOUBLE-1:XLEN];    // [63:32]
+            ALU_MULHU: result = mul_unsigned[XLEN_DOUBLE-1:XLEN];  // [63:32]
 
             // Divide
             ALU_DIV, ALU_DIVU: result = div_result;
