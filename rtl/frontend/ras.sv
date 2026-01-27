@@ -14,12 +14,14 @@ module ras (
     timeunit 1ns; timeprecision 1ps;
 
     typedef enum logic [1:0] {
+        DEFAULT = 2'b00,
         PUSH = 2'b10,
         POP = 2'b01,
         PUSH_AND_POP = 2'b11,
     } stack_op_t;
 
     stack_op_t op;
+    assign op = {push, pop};
 
     logic [XLEN-1:0] stack [RAS_SIZE-1:0];
     logic [RAS_PTR_WIDTH-1:0] tos; // top of stack
@@ -53,7 +55,9 @@ module ras (
                 PUSH_AND_POP: begin
                     stack[tos] <= return_addr; // replace top
                 end
-                default: ; // do nothing 2'b00
+                default: begin
+                    // do nothing 2'b00
+                end
             endcase
         end
     end

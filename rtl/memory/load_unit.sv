@@ -4,7 +4,7 @@ module load_unit (
     input logic [XLEN-1:0] addr,
     input logic [XLEN-1:0] mem_rdata_raw,
     input mem_op_e mem_op,
-    output logic [XLEN-1:0] rdata_aligned,
+    output logic [XLEN-1:0] rdata_aligned
 );
     timeunit 1ns; timeprecision 1ps;
 

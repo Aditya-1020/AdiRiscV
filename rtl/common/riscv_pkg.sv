@@ -186,7 +186,7 @@ package riscv_pkg;
     // Branch Target Buffer parameters
     parameter int BTB_SIZE = 64;
     parameter int BTB_INDEX_WIDTH = $clog2(BTB_SIZE);
-    parameter int BTB_TAG_WIDTH = XLEN - (BTB_INDEX_WIDTH - 2);
+    parameter int BTB_TAG_WIDTH = XLEN - BTB_INDEX_WIDTH - 2;
     
     // Return Address Stack parameters
     parameter int RAS_SIZE = 8;
@@ -202,10 +202,8 @@ package riscv_pkg;
     
     // Branch prediction result structure
     typedef struct packed {
-        logic               valid;
-        logic               taken;
-        logic [XLEN-1:0]    target;
-        branch_pred_state_e state;
+        logic predict_taken;
+        logic [XLEN-1:0] predict_target;
     } branch_pred_t;
 
     // Hazard Detection

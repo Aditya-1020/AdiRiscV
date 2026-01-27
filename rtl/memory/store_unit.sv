@@ -36,15 +36,11 @@ module store_unit (
                     byte_enable = 4'b1000;
                 end
             endcase
+            end
             
             MEM_HALF: begin
-                if (addr[1]) begin
-                    wdata_aligned = {wdata[15:0], 16'b0};
-                    byte_enable = 4'b1100;
-                end else begin
-                    wdata_aligned = {16'b0, wdata[15:0]};
-                    byte_enable = 4'b0011;
-                end
+                wdata_aligned = {wdata[15:0], 16'b0} << (addr[1] ? 16 : 0);
+                byte_enable = 4'b0011 << (addr[1] ? 2 : 0);
             end
 
             MEM_WORD: begin
@@ -56,9 +52,7 @@ module store_unit (
                 wdata_aligned = wdata;
                 byte_enable = 4'b1111;
             end
+        endcase
         end
         
-
-    end
-
 endmodule

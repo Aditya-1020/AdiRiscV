@@ -15,7 +15,7 @@ module pc(
     input logic predict_taken,
     input logic [XLEN-1:0] predict_target,
 
-    output logic [XLEN-1:0] pc
+    output logic [XLEN-1:0] pc,
     output logic [XLEN-1:0] pc_plus4
 );
     timeunit 1ns; timeprecision 1ps;
@@ -25,7 +25,7 @@ module pc(
 
     always_comb begin
         if (branch_taken) begin
-            pc_next = branch_taken;
+            pc_next = branch_target;
         end else if (predict_taken) begin
             pc_next = predict_target;
         end else begin

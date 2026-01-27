@@ -12,7 +12,7 @@ module btb (
     input logic update_en,
     input logic [XLEN-1:0] pc_update,
     input logic [XLEN-1:0] target_actual,
-    input logic is_branch_or_jmp
+    input logic is_branch_or_jmp,
 
     output logic hit, // to branch preictor
     output logic [XLEN-1:0] target_predicted, // to pc update

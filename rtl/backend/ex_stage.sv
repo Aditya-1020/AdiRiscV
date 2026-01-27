@@ -16,10 +16,10 @@ module ex_stage (
     input logic wb_reg_write,
 
     // btb update
-    output logic btb_update_en;
-    output logic [XLEN-1:0] btb_pc_update;
-    output logic [XLEN-1:0] btb_target_actual;
-    output logic btb_is_branch_or_jmp;
+    output logic btb_update_en,
+    output logic [XLEN-1:0] btb_pc_update,
+    output logic [XLEN-1:0] btb_target_actual,
+    output logic btb_is_branch_or_jmp,
 
     // brach out -> IF and hazard
     output logic branch_taken,

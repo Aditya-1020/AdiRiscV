@@ -118,7 +118,7 @@ module if_stage (
             predict_target = ras_predicted_target;
         end else if (btb_hit) begin // btb
             predict_taken = 1'b1;
-            predict_target = btb_target_actual;
+            predict_target = btb_target_predicted;
         end else begin // seq
             predict_taken = 1'b0;
             predict_target = pc_plus4;
@@ -128,7 +128,7 @@ module if_stage (
 
     // pack outputs
     always_comb begin
-        if_id_out.pc = pc;instr_fetch
+        if_id_out.pc = pc_next;
         if_id_out.instruction = instruction;
         if_id_out.pc_plus4 = pc_plus4;
         if_id_out.valid_if_id = 1'b1; // valid until flush activated
