@@ -14,6 +14,8 @@ package riscv_pkg;
     parameter int WORD_ADDR_WIDTH = 10;
     parameter int BYTE_ADDR_WIDTH = 12;
     parameter int COUNT_SIZE_DIVISOR = $clog2(XLEN);
+    parameter int BYTE_SIZE = 8;
+    parameter int HALF_WORD_SIZE = 16;
     
     parameter logic [XLEN-1:0] RESET_PC = 32'h00000000;
     parameter logic [XLEN-1:0] RESET_REG = 32'h00000000;
@@ -184,7 +186,7 @@ package riscv_pkg;
     // Branch Target Buffer parameters
     parameter int BTB_SIZE = 64;
     parameter int BTB_INDEX_WIDTH = $clog2(BTB_SIZE);
-    parameter int BTB_TAG_WIDTH = XLEN - BTB_INDEX_WIDTH - 2;
+    parameter int BTB_TAG_WIDTH = XLEN - (BTB_INDEX_WIDTH - 2);
     
     // Return Address Stack parameters
     parameter int RAS_SIZE = 8;

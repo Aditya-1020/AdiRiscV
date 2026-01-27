@@ -41,9 +41,12 @@ module riscv_pipelined_core (
     if_stage if_stage_inst (
         .clk(clk),
         .reset(reset),
+        .pc_stall(pc_stall),
         .branch_taken(branch_taken),
         .branch_target(branch_target),
-        .pc_stall(pc_stall),
+        // yet to implement
+        .predict_taken(1'b0),
+        .predict_target('0),
         .if_id_out(if_id_out)
     );
 

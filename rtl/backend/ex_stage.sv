@@ -15,6 +15,12 @@ module ex_stage (
     input logic [REG_ADDR_WIDTH-1:0] wb_rd_addr,
     input logic wb_reg_write,
 
+    // btb update
+    output logic btb_update_en;
+    output logic [XLEN-1:0] btb_pc_update;
+    output logic [XLEN-1:0] btb_target_actual;
+    output logic btb_is_branch_or_jmp;
+
     // brach out -> IF and hazard
     output logic branch_taken,
     output logic [XLEN-1:0] branch_target,
@@ -110,6 +116,12 @@ module ex_stage (
     );
 
     assign ex_stall = !alu_ready; // alu not ready -> stall
+
+    // Btb update logic
+    assign btb_update_en = id_ex_in.valid_id_ex;
+    assign btb_pc_update = id_ex_in.pc;
+    assign btb_target_actual = branch_target;
+    assign btb_is_branch_or_jmp = branch_taken; // update if taken
 
     // pack dis up
     // assign rs2_data_str = rs2_fwd;
