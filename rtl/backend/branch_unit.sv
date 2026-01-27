@@ -13,7 +13,7 @@ module branch_unit(
     timeunit 1ns;
     timeprecision 1ps;
 
-    localparam logic [XLEN-1:0] JALR_ALIGN_MASK = ~32'h1;
+    localparam logic [XLEN-1:0] JALR_ALIGN_MASK = ~{{(XLEN-1){1'b0}}, 1'b1};  // ~32'h1;
 
     logic condition_met;
     logic is_branch;

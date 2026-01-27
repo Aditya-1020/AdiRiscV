@@ -46,7 +46,6 @@ module hazard_unit (
             if_id_stall = 1'b1;
             id_ex_stall = 1'b1;
             ex_mem_stall = 1'b1;
-            ex_mem_stall = 1'b1;
             mem_wb_stall = 1'b1;
         end else if (load_use_hazard) begin
             pc_stall = 1'b1;

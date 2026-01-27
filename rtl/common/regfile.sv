@@ -30,9 +30,21 @@ module regfile (
         end
     end
 
+    logic [XLEN-1:0] rs1_data_raw, rs2_data_raw;
+
     always_comb begin
-        rs1_data = (rs1_addr == '0) ? '0 : (wr_en && rd == rs1_addr) ? write_data : registers[rs1_addr];
-        rs2_data = (rs2_addr == '0) ? '0 : (wr_en && rd == rs2_addr) ? write_data : registers[rs2_addr];
+        // read from regfile
+        rs1_data_raw = (rs1_addr == 5'd0) ? 32'h0 : registers[rs1_addr];
+        rs2_data_raw = (rs2_addr == 5'd0) ? 32'h0 : registers[rs2_addr];
+
+        // forward if writing to same reg
+        rs1_data = (wr_en && rd == rs1_addr) ? write_data : rs1_data_raw;
+        rs2_data = (wr_en && rd == rs2_addr) ? write_data : rs2_data_raw;
     end
+    
+    // always_comb begin
+    //     rs1_data = (rs1_addr == '0) ? '0 : (wr_en && rd == rs1_addr) ? write_data : registers[rs1_addr];
+    //     rs2_data = (rs2_addr == '0) ? '0 : (wr_en && rd == rs2_addr) ? write_data : registers[rs2_addr];
+    // end
 
 endmodule
