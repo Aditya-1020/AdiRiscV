@@ -16,3 +16,4 @@ sim/
 *.wdb
 
 riscv-venv/
+build/
