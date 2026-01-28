@@ -7,7 +7,7 @@ package riscv_pkg;
     // Basic Architecture Parameters
     parameter int XLEN = 32;
     parameter int XLEN_DOUBLE = 64;
-    parameter REG_ADDR_WIDTH = 5;
+    parameter int REG_ADDR_WIDTH = 5;
     parameter int NUM_REGS = 2**REG_ADDR_WIDTH; // 32
     parameter int IMEM_SIZE = 1024;      // Instructions (words)
     parameter int DMEM_SIZE = 4096;      // Data (bytes)

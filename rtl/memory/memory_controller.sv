@@ -26,7 +26,7 @@ module memory_controller (
 
     always_ff @(posedge clk) begin
         if (reset) begin
-            for (int i = 0; i < IMEM_SIZE; i++) imem[i] <= NOP_INSTR;
+            // for (int i = 0; i < IMEM_SIZE; i++) imem[i] <= NOP_INSTR;
             for (int i = 0; i < DMEM_SIZE; i++) dmem[i] <= '0;
         end
     end
@@ -51,7 +51,18 @@ module memory_controller (
     assign dmem_rd_en_qual = dmem_rd_en && dmem_in_bounds;
     
     // Read 4 bytes
-    assign dmem_rdata = dmem_rd_en_qual ? {>>{dmem[dmem_byte_addr +: BYTES_PER_WORD]}} : '0;
+    // assign dmem_rdata = dmem_rd_en_qual ? {>>{dmem[dmem_byte_addr +: BYTES_PER_WORD]}} : '0;
+
+    always_comb begin
+        if (dmem_rd_en_qual) begin
+            dmem_rdata = {dmem[dmem_byte_addr + 3],
+                          dmem[dmem_byte_addr + 2],
+                          dmem[dmem_byte_addr + 1],
+                          dmem[dmem_byte_addr + 0]};
+        end else begin
+            dmem_rdata = '0;
+        end
+    end
 
     logic dmem_wr_en_qual;
     assign dmem_wr_en_qual = dmem_wr_en && dmem_in_bounds;

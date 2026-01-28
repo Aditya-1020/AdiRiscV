@@ -10,23 +10,23 @@ module regfile (
     output logic [XLEN-1:0] rs1_data,
     output logic [XLEN-1:0] rs2_data
 );
+    timeunit 1ns; timeprecision 1ps;
 
-    timeunit 1ns;
-    timeprecision 1ps;
-    
-    // logic [XLEN-1:0] registers [0:NUM_REGS-1];
-    (* ram_style = "distributed" *) logic [XLEN-1:0] registers [1:NUM_REGS-1]; 
+    localparam REG_ZERO = 5'd0;
+
+    // 32 reg x0 always 0
+    (* ram_style = "distributed" *) logic [XLEN-1:0] registers [0:NUM_REGS-1]; 
+
+    logic reg_write_en;
+    assign reg_write_en = wr_en && (rd != REG_ZERO);
 
     always_ff @(posedge clk) begin
         if (reset) begin
             for (int i = 1; i < NUM_REGS; i++) begin
                 registers[i] <= RESET_REG;
             end
-        end
-        else begin
-            if (wr_en && (rd != '0)) begin
-                registers[rd] <= write_data;
-            end
+        end else if (reg_write_en) begin
+            registers[rd] <= write_data;
         end
     end
 
@@ -34,17 +34,12 @@ module regfile (
 
     always_comb begin
         // read from regfile
-        rs1_data_raw = (rs1_addr == 5'd0) ? 32'h0 : registers[rs1_addr];
-        rs2_data_raw = (rs2_addr == 5'd0) ? 32'h0 : registers[rs2_addr];
+        rs1_data_raw = (rs1_addr == REG_ZERO) ? 32'h0 : registers[rs1_addr];
+        rs2_data_raw = (rs2_addr == REG_ZERO) ? 32'h0 : registers[rs2_addr];
 
         // forward if writing to same reg
-        rs1_data = (wr_en && rd == rs1_addr) ? write_data : rs1_data_raw;
-        rs2_data = (wr_en && rd == rs2_addr) ? write_data : rs2_data_raw;
+        rs1_data = (reg_write_en && (rd != rs1_addr)) ? write_data : rs1_data_raw;
+        rs2_data = (reg_write_en && (rd != rs2_addr)) ? write_data : rs2_data_raw;
     end
     
-    // always_comb begin
-    //     rs1_data = (rs1_addr == '0) ? '0 : (wr_en && rd == rs1_addr) ? write_data : registers[rs1_addr];
-    //     rs2_data = (rs2_addr == '0) ? '0 : (wr_en && rd == rs2_addr) ? write_data : registers[rs2_addr];
-    // end
-
 endmodule
