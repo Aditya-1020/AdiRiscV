@@ -124,7 +124,6 @@ module ex_stage (
     assign btb_is_branch_or_jmp = branch_taken; // update if taken
 
     // pack dis up
-    // assign rs2_data_str = rs2_fwd;
     always_comb begin
         ex_mem_out.alu_result = alu_result;
         ex_mem_out.rs2_data_str = rs2_fwd; // for stores

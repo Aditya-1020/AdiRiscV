@@ -38,8 +38,8 @@ module regfile (
         rs2_data_raw = (rs2_addr == REG_ZERO) ? 32'h0 : registers[rs2_addr];
 
         // forward if writing to same reg
-        rs1_data = (reg_write_en && (rd != rs1_addr)) ? write_data : rs1_data_raw;
-        rs2_data = (reg_write_en && (rd != rs2_addr)) ? write_data : rs2_data_raw;
+        rs1_data = (reg_write_en && (rd == rs1_addr)) ? write_data : rs1_data_raw;
+        rs2_data = (reg_write_en && (rd == rs2_addr)) ? write_data : rs2_data_raw;
     end
-    
+
 endmodule

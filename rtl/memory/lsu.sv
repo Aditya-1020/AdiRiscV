@@ -33,13 +33,18 @@ module lsu (
 
 
     // Misaligned check
+    logic mem_rd_wr_chk;
+    assign mem_rd_wr_chk = mem_read || mem_write;
+    
     always_comb begin
         misaligned_error = 1'b0;
-        case (mem_op)
-            MEM_HALF, MEM_HALF_U: misaligned_error = addr[0];
-            MEM_WORD: misaligned_error = (addr[1:0] != 2'b00);
-            default: misaligned_error = 1'b0;
-        endcase
+        if (mem_rd_wr_chk) begin
+            case (mem_op)
+                MEM_HALF, MEM_HALF_U: misaligned_error = addr[0];
+                MEM_WORD: misaligned_error = (addr[1:0] != 2'b00);
+                default: misaligned_error = 1'b0;
+            endcase 
+        end
     end
 
     load_unit load_inst (
