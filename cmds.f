@@ -7,7 +7,7 @@ rtl/frontend/if_stage.sv
 
 rtl/frontend/btb.sv
 rtl/frontend/ras.sv
-# rtl/frontend/branch_predictor.sv
+rtl/frontend/branch_predictor.sv
 
 # decode + control
 rtl/control/imm_gen.sv

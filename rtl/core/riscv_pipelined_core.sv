@@ -4,9 +4,7 @@ module riscv_pipelined_core (
     input logic clk,
     input logic reset
 );
-
-    timeunit 1ns;
-    timeprecision 1ps;
+    timeunit 1ns; timeprecision 1ps;
 
     // Pipeline register outputs
     if_id_reg_t if_id_out;
@@ -24,14 +22,21 @@ module riscv_pipelined_core (
     logic [XLEN-1:0] btb_target_actual;
     logic btb_is_branch_or_jmp;
 
+    // Branch predictor update signals from EX
+    logic bp_update_en;
+    logic [XLEN-1:0] bp_update_pc;
+    logic bp_actual_taken;
+    logic [XLEN-1:0] bp_actual_target;
+    logic bp_is_branch;
+
     // Hazard control signals
     logic if_id_stall, if_id_flush;
     logic id_ex_stall, id_ex_flush;
     logic ex_mem_stall, ex_mem_flush;
     logic mem_wb_stall, mem_wb_flush;
     logic pc_stall;
-    logic ex_stall; // Division stall signal
-    logic mem_stall; // Memory stall (unused for now)
+    logic ex_stall;
+    logic mem_stall;
 
     // WB stage outputs
     logic [REG_ADDR_WIDTH-1:0] wb_rd_addr;
@@ -54,10 +59,8 @@ module riscv_pipelined_core (
     memory_controller mem_ctrl (
         .clk(clk),
         .reset(reset),
-        // Instruction memory
         .imem_addr(imem_addr),
         .imem_rdata(imem_rdata),
-        // Data memory
         .dmem_addr(dmem_addr),
         .dmem_wdata(dmem_wdata),
         .dmem_byte_en(dmem_byte_en),
@@ -73,11 +76,17 @@ module riscv_pipelined_core (
         .pc_stall(pc_stall),
         .branch_taken(branch_taken),
         .branch_target(branch_target),
-        // BTB update signals from EX
+        // BTB update
         .btb_update_en(btb_update_en),
         .btb_pc_update(btb_pc_update),
         .btb_target_actual(btb_target_actual),
         .btb_is_branch_or_jmp(btb_is_branch_or_jmp),
+        // Branch predictor update
+        .bp_update_en(bp_update_en),
+        .bp_update_pc(bp_update_pc),
+        .bp_actual_taken(bp_actual_taken),
+        .bp_actual_target(bp_actual_target),
+        .bp_is_branch(bp_is_branch),
         // Memory interface
         .imem_addr(imem_addr),
         .imem_rdata(imem_rdata),
@@ -131,11 +140,18 @@ module riscv_pipelined_core (
         .wb_rd_addr(wb_rd_addr),
         .wb_reg_write(wb_reg_write),
         
-        // BTB update outputs
+        // BTB update
         .btb_update_en(btb_update_en),
         .btb_pc_update(btb_pc_update),
         .btb_target_actual(btb_target_actual),
         .btb_is_branch_or_jmp(btb_is_branch_or_jmp),
+        
+        // Branch predictor update
+        .bp_update_en(bp_update_en),
+        .bp_update_pc(bp_update_pc),
+        .bp_actual_taken(bp_actual_taken),
+        .bp_actual_target(bp_actual_target),
+        .bp_is_branch(bp_is_branch),
         
         // Branch resolution
         .branch_taken(branch_taken),
@@ -160,7 +176,6 @@ module riscv_pipelined_core (
         .clk(clk),
         .reset(reset),
         .ex_mem_in(ex_mem_out),
-        // Memory controller interface
         .dmem_addr(dmem_addr),
         .dmem_wdata(dmem_wdata),
         .dmem_byte_en(dmem_byte_en),

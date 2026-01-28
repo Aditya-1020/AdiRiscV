@@ -17,6 +17,13 @@ module if_stage (
     input logic [XLEN-1:0] btb_target_actual,
     input logic btb_is_branch_or_jmp,
 
+    // branch predictor update from ex
+    input logic bp_update_en,
+    input logic [XLEN-1:0] bp_update_pc,
+    input logic bp_actual_taken,
+    input logic [XLEN-1:0] bp_actual_target,
+    input logic bp_is_branch,
+
     // memory interface
     input logic [XLEN-1:0] imem_rdata,
     output logic [XLEN-1:0] imem_addr,
@@ -32,7 +39,8 @@ module if_stage (
     logic [XLEN-1:0] instruction;
     logic pc_en;
 
-    // internal prediction
+    // branch prediction
+    branch_pred_t bp_prediction;
     logic predict_taken;
     logic [XLEN-1:0] predict_target;
 
@@ -60,11 +68,11 @@ module if_stage (
         .pc_plus4(pc_plus4)
     );
 
-    // imem - convert byte address to word address
+    // IMEM - convert byte address to word address
     assign imem_addr = pc;
     assign instruction = imem_rdata;
 
-    // detect calls/returns for RAS
+    // Detect calls/returns for RAS
     logic [REG_ADDR_WIDTH-1:0] rd, rs1;
     opcode_e opcode;
 
@@ -78,7 +86,7 @@ module if_stage (
     // call JAL/JALR with link reg as dest
     assign is_call = (opcode == OP_JAL || is_jalr) && (rd == RA_REG || rd == T0_REG);
     
-    // return: JALR with link reg as src x0 as dest
+    // return JALR with link reg as src x0 as dest
     assign is_return = is_jalr && (rs1 == RA_REG || rs1 == T0_REG) && (rd == 5'd0);
 
     ras ras_inst (
@@ -95,7 +103,7 @@ module if_stage (
         .clk(clk),
         .reset(reset),
         .pc_lookup(pc),
-        .lookup_en(1'b1), // always enabled
+        .lookup_en(1'b1),
         .update_en(btb_update_en),
         .pc_update(btb_pc_update),
         .target_actual(btb_target_actual),
@@ -104,26 +112,34 @@ module if_stage (
         .target_predicted(btb_target_predicted)
     );
 
-    // ras > btb > sequential
-    always_comb begin
-        if (is_return && ras_valid) begin // ras for returns
-            predict_taken = 1'b1;
-            predict_target = ras_predicted_target;
-        end else if (btb_hit) begin // btb prediction for branches/jumps
-            predict_taken = 1'b1;
-            predict_target = btb_target_predicted;
-        end else begin // sequential no prediction
-            predict_taken = 1'b0;
-            predict_target = pc_plus4;
-        end
-    end
+    branch_predictor bp_inst (
+        .clk(clk),
+        .reset(reset),
+        .pc(pc),
+        .instruction(instruction),
+        .predict_en(1'b1),
+        .ras_valid(ras_valid),
+        .ras_target(ras_predicted_target),
+        .btb_hit(btb_hit),
+        .btb_target(btb_target_predicted),
+        .update_en(bp_update_en),
+        .update_pc(bp_update_pc),
+        .actual_taken(bp_actual_taken),
+        .actual_target(bp_actual_target),
+        .is_branch(bp_is_branch),
+        .prediction_out(bp_prediction)
+    );
 
-    // Pack outputs for IF/ID register
+    // use output of bp
+    assign predict_taken = bp_prediction.predict_taken;
+    assign predict_target = bp_prediction.predict_target;
+
+    // Pack for IF/ID reg
     always_comb begin
         if_id_out.pc = pc;
         if_id_out.instruction = instruction;
         if_id_out.pc_plus4 = pc_plus4;
-        if_id_out.valid_if_id = 1'b1; // valid until flush
+        if_id_out.valid_if_id = 1'b1;
     end
 
 endmodule
