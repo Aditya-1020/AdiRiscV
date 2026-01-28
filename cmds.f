@@ -44,4 +44,5 @@ rtl/control/hazard_unit.sv
 rtl/core/riscv_pipelined_core.sv
 
 # Testbenches
-tb/tb_pipelined.sv
+# tb/tb_pipelined.sv
+tb/tb_tracex5.sv

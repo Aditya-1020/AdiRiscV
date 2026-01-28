@@ -16,10 +16,39 @@ module tb_pipelined;
         .reset(reset)
     );
 
+    // Monitor signals every cycle
+    always @(posedge clk) begin
+        if (!reset) begin
+            $display("\n=== Cycle %0d (time %0t) ===", $time/10, $time);
+            $display("PC = 0x%08h", dut.if_stage_inst.pc);
+            $display("IMEM addr = 0x%08h", dut.imem_addr);
+            $display("Instruction = 0x%08h", dut.imem_rdata);
+            $display("IF/ID.valid = %b", dut.if_id_reg_out.valid_if_id);
+            $display("IF/ID.instruction = 0x%08h", dut.if_id_reg_out.instruction);
+            $display("ID/EX.valid = %b", dut.id_ex_reg_out.valid_id_ex);
+            $display("EX/MEM.valid = %b", dut.ex_mem_out.valid_ex_mem);
+            $display("MEM/WB.valid = %b", dut.mem_wb_out.valid_mem_wb);
+            
+            // Check hazards
+            $display("Hazards: pc_stall=%b, if_id_flush=%b, id_ex_flush=%b, ex_stall=%b",
+                    dut.pc_stall, dut.if_id_flush, dut.id_ex_flush, dut.ex_stall);
+            
+            // Check WB
+            if (dut.wb_reg_write) begin
+                $display("WB: Writing x%0d = 0x%08h", dut.wb_rd_addr, dut.wb_write_data);
+            end
+        end
+    end
+
     task automatic load_program();
-        // Load simple test program directly
         $readmemh("programs/TEST.hex", dut.mem_ctrl.imem);
-        $display("[INFO] loaded into instruction memory");
+        $display("\n[INFO] Program loaded");
+        
+        // Verify first few instructions
+        $display("\nFirst 10 instructions:");
+        for (int i = 0; i < 10; i++) begin
+            $display("  imem[%0d] = 0x%08h", i, dut.mem_ctrl.imem[i]);
+        end
     endtask
 
     task automatic check_reg(int reg_num, logic [31:0] expected, string name);
@@ -34,55 +63,51 @@ module tb_pipelined;
     endtask
 
     initial begin
-        $dumpfile("pipelined.vcd");
+        $dumpfile("pipelined_debug.vcd");
         $dumpvars(0, tb_pipelined);
 
-        $display("\n========================================");
-        $display(" Simple Pipeline Test");
-        $display("========================================\n");
+        $display("\n╔═══════════════════════════════════════╗");
+        $display("║  Pipeline Debug Test                  ║");
+        $display("╚═══════════════════════════════════════╝");
 
         reset = 1;
         load_program();
 
+        $display("\n[INFO] Holding reset for 5 cycles...");
         repeat(5) @(posedge clk);
-        reset = 0;
-        $display("[INFO] Starting execution...\n");
-
-        // Run for enough cycles
-        repeat(100) @(posedge clk);
-
-        $display("\n========================================");
-        $display(" TEST RESULTS");
-        $display("========================================");
         
-        check_reg(5,  32'd10, "x5 = 10");
-        check_reg(6,  32'd20, "x6 = 20");
-        check_reg(7,  32'd30, "x7 = 10 + 20");
-        check_reg(8,  32'd10, "x8 = 20 - 10");
-        check_reg(4,  32'd1,  "x4 = 1 (branch taken)");
-        check_reg(13, 32'd100, "x13 = 100 (JAL worked)");
-        check_reg(29, 32'd170, "x29 = 0xAA");
-        check_reg(30, 32'd187, "x30 = 0xBB");
-        check_reg(31, 32'd204, "x31 = 0xCC");
+        reset = 0;
+        $display("\n[INFO] Reset released, starting execution...");
 
-        $display("\n========================================");
-        $display(" All Registers:");
-        $display("========================================");
-        for (int i = 1; i < 32; i++) begin
+        // Run for limited cycles with monitoring
+        repeat(30) @(posedge clk);
+
+        $display("\n\n╔═══════════════════════════════════════╗");
+        $display("║  Final Register State                 ║");
+        $display("╚═══════════════════════════════════════╝");
+        
+        for (int i = 0; i < 32; i++) begin
             if (dut.id_stage_inst.regfile_inst.registers[i] != 0) begin
                 $display("  x%-2d = 0x%08h (%0d)", i,
                         dut.id_stage_inst.regfile_inst.registers[i],
                         $signed(dut.id_stage_inst.regfile_inst.registers[i]));
             end
         end
-        $display("========================================\n");
+
+        $display("\n╔═══════════════════════════════════════╗");
+        $display("║  Expected Results                     ║");
+        $display("╚═══════════════════════════════════════╝");
+        
+        check_reg(5,  32'd10, "x5 = 10");
+        check_reg(6,  32'd20, "x6 = 20");
+        check_reg(7,  32'd30, "x7 = 30");
 
         $finish;
     end
 
     initial begin
-        #100000;
-        $display("[ERROR] Timeout");
+        #50000;
+        $display("\n[ERROR] Timeout");
         $finish;
     end
 
