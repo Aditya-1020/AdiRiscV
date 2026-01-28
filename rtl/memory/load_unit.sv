@@ -28,7 +28,7 @@ module load_unit (
         case (mem_op)
             MEM_BYTE: rdata_aligned = {{24{byte_data[7]}}, byte_data};
             MEM_BYTE_U: rdata_aligned = {24'b0, byte_data};
-            MEM_HALF: rdata_aligned = {{16'{half_data[15]}}, half_data};
+            MEM_HALF: rdata_aligned = {{16{half_data[15]}}, half_data};
             MEM_HALF_U: rdata_aligned = {16'b0, half_data};
             MEM_WORD: rdata_aligned = mem_rdata_raw;
             default: rdata_aligned = mem_rdata_raw;

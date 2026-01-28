@@ -17,11 +17,11 @@ module ras (
         DEFAULT = 2'b00,
         PUSH = 2'b10,
         POP = 2'b01,
-        PUSH_AND_POP = 2'b11,
+        PUSH_AND_POP = 2'b11
     } stack_op_t;
 
     stack_op_t op;
-    assign op = {push, pop};
+    assign op = stack_op_t'({push, pop});
 
     logic [XLEN-1:0] stack [RAS_SIZE-1:0];
     logic [RAS_PTR_WIDTH-1:0] tos; // top of stack

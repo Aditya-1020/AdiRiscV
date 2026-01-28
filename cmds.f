@@ -1,66 +1,47 @@
+# package
+rtl/common/riscv_pkg.sv
 
-# Package
-rtl/core/riscv_pkg.sv
+# frontend fetch + prediction
+rtl/frontend/pc.sv
+rtl/frontend/if_stage.sv
 
+rtl/frontend/btb.sv
+rtl/frontend/ras.sv
+# rtl/frontend/branch_predictor.sv
 
-# Frontend — Fetch
-rtl/frontend/fetch/pc.sv
-rtl/frontend/fetch/imem.sv
-rtl/frontend/fetch/if_stage.sv
+# decode + control
+rtl/control/imm_gen.sv
+rtl/control/decoder.sv
+rtl/control/id_stage.sv
+rtl/common/regfile.sv
 
-# tb/tb_pc.sv
-# tb/tb_pc_plus4.sv
-# tb/tb_imem.sv
+# backend execute + WB
+rtl/backend/alu.sv
+rtl/backend/divider.sv
+rtl/backend/branch_unit.sv
+rtl/backend/ex_stage.sv
+rtl/backend/wb_stage.sv
 
+# memory
+rtl/memory/load_unit.sv
+rtl/memory/store_unit.sv
+rtl/memory/lsu.sv
+rtl/memory/mem_stage.sv
+rtl/memory/memory_controller.sv
 
-# Frontend — Decode
-rtl/frontend/decode/imm_gen.sv
-rtl/frontend/decode/regfile.sv
-rtl/frontend/decode/decoder.sv
-rtl/frontend/decode/id_stage.sv
+# pipeline reg
+rtl/common/if_id_reg.sv
+rtl/common/id_ex_reg.sv
+rtl/common/ex_mem_reg.sv
+rtl/common/mem_wb_reg.sv
 
-# tb/tb_imm_gen.sv
-# tb/tb_regfile.sv
-# tb/tb_decoder.sv
+# pipeline control
+rtl/control/forwarding_unit.sv
+rtl/control/hazard_unit.sv
 
-
-# Backend — Execute
-rtl/backend/execute/alu.sv
-rtl/backend/execute/divider.sv
-rtl/backend/execute/branch_unit.sv
-rtl/backend/execute/ex_stage.sv
-
-# tb/tb_alu.sv
-# tb/tb_mtype.sv
-# tb/tb_branch_unit.sv
-
-
-# Backend — Memory
-rtl/backend/memory/dmem.sv
-rtl/backend/memory/mem_stage.sv
-
-# tb/tb_dmem.sv
-
-
-# Backend — Writeback
-rtl/backend/writeback/wb_stage.sv
-
-
-# Pipeline Registers
-rtl/pipeline/if_id_reg.sv
-rtl/pipeline/id_ex_reg.sv
-rtl/pipeline/ex_mem_reg.sv
-rtl/pipeline/mem_wb_reg.sv
-
-
-# Pipeline Control Units
-rtl/pipeline/forwarding_unit.sv
-rtl/pipeline/hazard_unit.sv
-
-
-# Core Top Level
-rtl/core/riscv_single_cycle_core.sv
+# Core top level
+# rtl/core/riscv_single_cycle_core.sv
 rtl/core/riscv_pipelined_core.sv
 
-# tb/tb_single_cycle.sv
-# tb/tb_pipelined.sv
+# Testbenches
+tb/tb_pipelined.sv

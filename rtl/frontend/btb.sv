@@ -14,13 +14,11 @@ module btb (
     input logic [XLEN-1:0] target_actual,
     input logic is_branch_or_jmp,
 
-    output logic hit, // to branch preictor
-    output logic [XLEN-1:0] target_predicted, // to pc update
+    output logic hit,
+    output logic [XLEN-1:0] target_predicted
 );
     timeunit 1ns;
     timeprecision 1ps;
-
-    // answers: if isntruction turns out to be a branch takn, where should i jump ?
 
     logic [BTB_SIZE-1:0] valid; // valid bit for each entry
     logic [BTB_TAG_WIDTH-1:0] tag_array [BTB_SIZE-1:0];
@@ -38,32 +36,24 @@ module btb (
     assign update_index = pc_update[BTB_INDEX_WIDTH+1:2];
     assign update_tag = pc_update[XLEN-1:BTB_INDEX_WIDTH+2];
 
+    logic update_btb;
+    assign update_btb = update_en && is_branch_or_jmp;
+    
     // write to btb
     always_ff @(posedge clk) begin
         if (reset) begin
-            valid <= '0; // clear valid bits
-            // tag and target dont need resets
-        end else begin
-            if (update_en && is_branch_or_jmp) begin
-                valid[update_index] <= 1'b1;
-                tag_array[update_index] <= update_tag;
-                target_array[update_index] <= target_actual;
-            end
+            valid <= '0;
+        end else if (update_btb) begin
+            valid[update_index] <= 1'b1;
+            tag_array[update_index] <= update_tag;
+            target_array[update_index] <= target_actual;
         end
     end
     
     // read from btb
-    always_comb begin
-        if (lookup_en && valid[lookup_index] && (tag_array[lookup_index] == lookup_tag)) begin
-            hit = 1'b1;
-            target_predicted = target_array[lookup_index];
-        end else begin
-            hit = 1'b0;
-            target_predicted = pc_lookup + 32'd4;
-        end
-    end
-
-    logic btb_en;
-    assign btb_en = update_en && is_branch_or_jmp;
+    logic tag_match;
+    assign tag_match = valid[lookup_index] && (tag_array[lookup_index] == lookup_tag);
+    assign hit = lookup_en && tag_match;
+    assign target_predicted = hit ? target_array[lookup_index] : pc_lookup + 32'd4;    
 
 endmodule
