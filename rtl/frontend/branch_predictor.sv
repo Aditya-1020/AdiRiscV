@@ -29,17 +29,28 @@ module branch_predictor (
     timeunit 1ns; timeprecision 1ps;
 
     // 2 bit saturating counters
-    localparam PHT_SIZE = 256;
-    localparam PHT_INDEX_WIDTH = $clog2(PHT_SIZE);
+    localparam int PHT_SIZE = 256;
+    localparam int PHT_INDEX_WIDTH = $clog2(PHT_SIZE);
+    localparam int HISTORY_BUFFER_SIZE = 8;
 
     branch_pred_state_e pht [PHT_SIZE-1:0];
+
+    logic [HISTORY_BUFFER_SIZE-1:0] global_history;
 
     // indices
     logic [PHT_INDEX_WIDTH-1:0] predict_index;
     logic [PHT_INDEX_WIDTH-1:0] update_index;
 
-    assign predict_index = pc[PHT_INDEX_WIDTH+1:2];
-    assign update_index = update_pc[PHT_INDEX_WIDTH+1:2];
+    // G-share based predict index
+    assign predict_index = pc[PHT_INDEX_WIDTH+1:2] ^ global_history[PHT_INDEX_WIDTH-1:0];
+    assign update_index = update_pc[PHT_INDEX_WIDTH+1:2];;
+
+    // global history update on branch resolve
+    always_ff @(posedge clk) begin
+        if (update_en && is_branch) begin
+            global_history <= {global_history[HISTORY_BUFFER_SIZE-2:0], actual_taken};
+        end
+    end
 
     // instruction type
     opcode_e opcode;

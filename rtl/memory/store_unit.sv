@@ -39,8 +39,8 @@ module store_unit (
             end
             
             MEM_HALF: begin
-                wdata_aligned = {wdata[15:0], 16'b0} << (addr[1] ? 16 : 0);
-                byte_enable = 4'b0011 << (addr[1] ? 2 : 0);
+                wdata_aligned = addr[1] ? {wdata[15:0], 16'b0} : {16'b0, wdata[15:0]};
+                byte_enable = addr[1] ? 4'b1100 : 4'b0011;
             end
 
             MEM_WORD: begin

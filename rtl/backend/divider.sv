@@ -45,10 +45,7 @@ module divider(
     // if a neg (1) add else sub
     assign op_add = reg_A[XLEN];
 
-    always_comb begin
-        if (op_add) alu_out = shifted_A + {1'b0, reg_M}; // Add
-        else alu_out = shifted_A - {1'b0, reg_M}; // sub m
-    end
+    assign alu_out = op_add ? shifted_A + {1'b0, reg_M} : shifted_A - {1'b0, reg_M}; // add or sub
 
     always_ff @(posedge clk) begin
         if (reset) begin
