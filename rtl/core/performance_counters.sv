@@ -61,6 +61,3 @@ module performance_counters (
     end
 
 endmodule
-
-
-endmodule
