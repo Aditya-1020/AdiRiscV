@@ -46,3 +46,6 @@ rtl/core/riscv_pipelined_core.sv
 # Testbenches
 tb/tb_pipelined.sv
 # tb/tb_tracex5.sv
+
+# Performance
+rtl/core/performance_counters.sv
