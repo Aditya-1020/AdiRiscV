@@ -55,6 +55,19 @@ module riscv_pipelined_core (
     logic [3:0] dmem_byte_en;
     logic dmem_wr_en, dmem_rd_en;
 
+    // Performance counter
+    logic perf_instruction_retired;
+    logic perf_branch_taken;
+    logic perf_branch_mispredicted;
+    logic perf_load_use_stall;
+    logic perf_div_stall;
+    
+    logic [PERF_COUNTER_WIDTH-1:0] perf_cycles;
+    logic [PERF_COUNTER_WIDTH-1:0] perf_instructions;
+    logic [PERF_COUNTER_WIDTH-1:0] perf_branches;
+    logic [PERF_COUNTER_WIDTH-1:0] perf_branch_misses;
+    logic [PERF_COUNTER_WIDTH-1:0] perf_stalls;
+
     // MEMORY CONTROLLER
     memory_controller mem_ctrl (
         .clk(clk),
@@ -227,5 +240,29 @@ module riscv_pipelined_core (
         .mem_wb_stall(mem_wb_stall),
         .mem_wb_flush(mem_wb_flush)
     );
+
+    performance_counters perf_counters_inst (
+        .clk(clk),
+        .reset(reset),
+        .instruction_retired(perf_instruction_retired),
+        .branch_taken(perf_branch_taken),
+        .branch_mispredicted(perf_branch_mispredicted),
+        .load_use_stall(perf_load_use_stall),
+        .div_stall(perf_div_stall),
+        .cycles(perf_cycles),
+        .instructions(perf_instructions),
+        .branches(perf_branches),
+        .branch_misses(perf_branch_misses),
+        .stalls(perf_stalls)
+    );
+
+    // performance counter event detection
+    always_comb begin
+        perf_instruction_retired = wb_reg_write && mem_wb_out.valid_mem_wb;
+        perf_branch_taken = branch_taken && id_ex_reg_out.valid_id_ex;
+        perf_branch_mispredicted = branch_taken && if_id_flush;
+        perf_load_use_stall = id_ex_flush && !branch_taken && id_ex_reg_out.ctrl.mem_read;
+        perf_div_stall = ex_stall;
+    end
 
 endmodule

@@ -16,6 +16,8 @@ package riscv_pkg;
     parameter int COUNT_SIZE_DIVISOR = $clog2(XLEN);
     parameter int BYTE_SIZE = 8;
     parameter int HALF_WORD_SIZE = 16;
+
+    parameter int PERF_COUNTER_WIDTH = 32;
     
     parameter logic [XLEN-1:0] RESET_PC = 32'h00000000;
     parameter logic [XLEN-1:0] RESET_REG = 32'h00000000;
@@ -222,8 +224,6 @@ package riscv_pkg;
     parameter int ICACHE_OFFSET_WIDTH = $clog2(ICACHE_LINE_SIZE);
     parameter int ICACHE_TAG_WIDTH = XLEN - ICACHE_INDEX_WIDTH - ICACHE_OFFSET_WIDTH;
 
-    // Performance Counter Width
-    parameter int PERF_COUNTER_WIDTH = 32;
 
     // IF/ID pipeline reg
     typedef struct packed {
