@@ -20,18 +20,20 @@ module load_unit (
             2'b01: byte_data = mem_rdata_raw[15:8];
             2'b10: byte_data = mem_rdata_raw[23:16];
             2'b11: byte_data = mem_rdata_raw[31:24];
+            default: byte_data = 8'h00;
         endcase
 
-        // half-wrod selection
+        // half word select based on addr bit 1
         half_data = addr[1] ? mem_rdata_raw[31:16] : mem_rdata_raw[15:0];
 
+        // Align and extend based on operation type
         case (mem_op)
-            MEM_BYTE: rdata_aligned = {{24{byte_data[7]}}, byte_data};
-            MEM_BYTE_U: rdata_aligned = {24'b0, byte_data};
-            MEM_HALF: rdata_aligned = {{16{half_data[15]}}, half_data};
-            MEM_HALF_U: rdata_aligned = {16'b0, half_data};
-            MEM_WORD: rdata_aligned = mem_rdata_raw;
-            default: rdata_aligned = mem_rdata_raw;
+            MEM_BYTE:   rdata_aligned = {{24{byte_data[7]}}, byte_data};
+            MEM_BYTE_U: rdata_aligned = {{24{1'b0}}, byte_data};
+            MEM_HALF:   rdata_aligned = {{16{half_data[15]}}, half_data};
+            MEM_HALF_U: rdata_aligned = {{16{1'b0}}, half_data};
+            MEM_WORD:   rdata_aligned = mem_rdata_raw;
+            default:    rdata_aligned = 32'h00000000;
         endcase
     end
 endmodule

@@ -99,13 +99,17 @@ module divider(
     end
 
     // Output
-    // Quosient sign neg if sign differs
-    logic sign_result, sign_remainder;
+    logic sign_result;
+    logic sign_remainder;
     assign sign_result = sign_dividend ^ sign_divisor;
     assign sign_remainder = sign_dividend; // same as divided
 
     // mux with explicit 2s complement negation
-    assign result = sign_result ? -reg_Q : reg_Q;
-    assign remainder_out = sign_remainder ? -reg_A[XLEN-1:0] : reg_A[XLEN-1:0];
+    logic [XLEN-1:0] quotient_abs, remainder_abs;
+    assign quotient_abs = reg_Q;
+    assign remainder_abs = reg_A[XLEN-1:0];
+
+    assign result = (sign_result && quotient_abs != 0) ? -quotient_abs : quotient_abs;
+    assign remainder_out = (sign_remainder && remainder_abs != 0) ? -remainder_abs : remainder_abs;
 
 endmodule

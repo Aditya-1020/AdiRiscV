@@ -4,8 +4,6 @@ module id_stage (
     input logic clk,
     input logic reset,
     input if_id_reg_t if_id_in,
-    
-    // WB (regifle)
     input logic [REG_ADDR_WIDTH-1:0] wb_rd_addr,
     input logic [XLEN-1:0] wb_write_data,
     input logic wb_reg_write,
@@ -13,8 +11,7 @@ module id_stage (
     output id_ex_reg_t id_ex_out
 );
 
-    timeunit 1ns;
-    timeprecision 1ps;
+    timeunit 1ns; timeprecision 1ps;
 
     logic [4:0] rs1_addr, rs2_addr, rd_addr;
     logic [XLEN-1:0] rs1_data, rs2_data, immediate;
@@ -28,7 +25,6 @@ module id_stage (
 
     assign funct3_branch = if_id_in.instruction[14:12];
 
-    // Regfile
     regfile regfile_inst (
         .clk(clk),
         .reset(reset),
@@ -40,20 +36,18 @@ module id_stage (
         .rs1_data(rs1_data),
         .rs2_data(rs2_data)
     );
-    
-    // decoder
+
     decoder decoder_inst (
         .instruction(if_id_in.instruction),
         .ctrl(ctrl)
     );
 
-
-    // imm_gen
     imm_gen imm_gen_inst (
         .instruction(if_id_in.instruction),
         .immediate(immediate)
     );
 
+    // pack outputs for ID/EX register
     always_comb begin
         id_ex_out.pc = if_id_in.pc;
         id_ex_out.rs1_data = rs1_data;
@@ -64,7 +58,7 @@ module id_stage (
         id_ex_out.rs2_addr = rs2_addr;
         id_ex_out.rd_addr = rd_addr;
         id_ex_out.ctrl = ctrl;
-        id_ex_out.valid_id_ex = if_id_in.valid_if_id; // propogate valid bit (To track da bubbles dawg)
+        id_ex_out.valid_id_ex = if_id_in.valid_if_id;
     end
 
 endmodule

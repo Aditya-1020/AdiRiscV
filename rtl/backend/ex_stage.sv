@@ -84,16 +84,27 @@ module ex_stage (
         endcase
     end
 
-    // alu
+    // ALU input select
+    logic [XLEN-1:0] pc_plus_4;
+    assign pc_plus_4 = id_ex_in.pc + 32'd4;
+
     always_comb begin
         if (opcode == OP_AUIPC) begin
             alu_a = id_ex_in.pc;
+        end else if (is_jump) begin
+            alu_a = pc_plus_4;
         end else begin
             alu_a = rs1_fwd;
         end
     end
 
-    assign alu_b = id_ex_in.ctrl.alu_src ? id_ex_in.immediate : rs2_fwd;
+    always_comb begin
+        if (is_jump) begin
+            alu_b = 32'h00000000;
+        end else begin
+            alu_b = id_ex_in.ctrl.alu_src ? id_ex_in.immediate : rs2_fwd;
+        end
+    end
 
     alu alu_inst (
         .clk(clk),
@@ -116,21 +127,20 @@ module ex_stage (
         .branch_taken(branch_taken),
         .branch_target(branch_target)
     );
-
     assign ex_stall = !alu_ready;
 
-    // btb update 
+    // btb update
     assign btb_update_en = id_ex_in.valid_id_ex && (is_branch || is_jump);
     assign btb_pc_update = id_ex_in.pc;
     assign btb_target_actual = branch_target;
     assign btb_is_branch_or_jmp = branch_taken;
 
-    // branch predictor udpate
+    // branch predictor update
     assign bp_update_en = id_ex_in.valid_id_ex && (is_branch || is_jump);
     assign bp_update_pc = id_ex_in.pc;
     assign bp_actual_taken = branch_taken;
     assign bp_actual_target = branch_target;
-    assign bp_is_branch = is_branch;  // only update PHT for conditional branches
+    assign bp_is_branch = is_branch;
 
     // Pack outputs for EX/MEM register
     always_comb begin

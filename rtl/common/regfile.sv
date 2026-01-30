@@ -22,7 +22,7 @@ module regfile (
 
     always_ff @(posedge clk) begin
         if (reset) begin
-            for (int i = 1; i < NUM_REGS; i++) begin
+            for (int i = 0; i < NUM_REGS; i++) begin
                 registers[i] <= RESET_REG;
             end
         end else if (reg_write_en) begin
@@ -34,8 +34,8 @@ module regfile (
 
     always_comb begin
         // read from regfile
-        rs1_data_raw = (rs1_addr == REG_ZERO) ? 32'h0 : registers[rs1_addr];
-        rs2_data_raw = (rs2_addr == REG_ZERO) ? 32'h0 : registers[rs2_addr];
+        rs1_data_raw = (rs1_addr == REG_ZERO) ? '0 : registers[rs1_addr];
+        rs2_data_raw = (rs2_addr == REG_ZERO) ? '0 : registers[rs2_addr];
 
         // forward if writing to same reg
         rs1_data = (reg_write_en && (rd == rs1_addr)) ? write_data : rs1_data_raw;
