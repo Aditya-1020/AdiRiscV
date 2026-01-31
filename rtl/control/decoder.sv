@@ -1,6 +1,6 @@
 import riscv_pkg::*;
 
-module decoder(
+module decoder (
     input logic [XLEN-1:0] instruction,
     output ctrl_signals_t ctrl
 );
@@ -84,7 +84,7 @@ module decoder(
                 ctrl.mem_to_reg = 1'b1;
                 ctrl.alu_src = 1'b1;
                 ctrl.alu_op = ALU_ADD;
-
+                
                 case (funct3_bits)
                     F3_LB: ctrl.mem_op = MEM_BYTE;
                     F3_LH: ctrl.mem_op = MEM_HALF;

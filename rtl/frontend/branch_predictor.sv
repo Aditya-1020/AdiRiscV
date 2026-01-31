@@ -86,7 +86,7 @@ module branch_predictor (
     assign take_ras = is_return && ras_valid;
     assign take_jal = is_jal && btb_hit;
     assign take_jalr = is_jalr && btb_hit;
-    assign take_cond_branch = is_branch_instr && btb_hit && predict_taken_pht;
+    assign take_cond_branch = is_branch_instr && predict_taken_pht;
 
     always_comb begin
         // default: fall through

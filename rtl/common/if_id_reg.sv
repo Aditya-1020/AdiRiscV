@@ -15,15 +15,14 @@ module if_id_reg (
     
     always_ff @(posedge clk) begin
         if (reset || flush) begin
-            // Insert NOP/bubble
-            out.pc <= '0;
+            out.pc <= RESET_PC;
             out.instruction <= NOP_INSTR;
-            out.pc_plus4 <= '0;
-            out.valid_if_id <= '0;
+            out.pc_plus4 <= RESET_PC + 32'd4;
+            out.valid_if_id <= 1'b0;
         end else if (!stall) begin
             out <= in;
         end
-        // If stall=1 implicitly hold current values
     end
+
 
 endmodule

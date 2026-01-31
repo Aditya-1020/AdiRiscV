@@ -22,7 +22,19 @@ module id_ex_reg (
             out.rs1_addr <= '0;
             out.rs2_addr <= '0;
             out.rd_addr <= '0;
-            out.ctrl <= '0;
+            // Create a proper NOP control signal
+            out.ctrl <= '{
+                reg_write: 1'b0,
+                mem_read: 1'b0,
+                mem_write: 1'b0,
+                mem_to_reg: 1'b0,
+                alu_src: 1'b0,
+                is_branch: 1'b0,
+                is_jump: 1'b0,
+                is_jalr: 1'b0,
+                alu_op: ALU_ADD,
+                mem_op: MEM_WORD  // Explicit default
+            };
             out.valid_id_ex <= 1'b0;
         end else if (!stall) begin
             out <= in;

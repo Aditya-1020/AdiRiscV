@@ -24,7 +24,10 @@ module load_unit (
         endcase
 
         // half word select based on addr bit 1
-        half_data = addr[1] ? mem_rdata_raw[31:16] : mem_rdata_raw[15:0];
+        case (byte_offset[1])
+            1'b0: half_data = mem_rdata_raw[15:0];
+            1'b1: half_data = mem_rdata_raw[31:16];
+        endcase
 
         // Align and extend based on operation type
         case (mem_op)
@@ -36,4 +39,5 @@ module load_unit (
             default:    rdata_aligned = 32'h00000000;
         endcase
     end
+
 endmodule
