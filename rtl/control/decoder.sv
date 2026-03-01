@@ -1,13 +1,13 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module decoder (
     input logic [XLEN-1:0] instruction,
     output ctrl_signals_t ctrl
 );
-
-    timeunit 1ns;
-    timeprecision 1ps;
-
     opcode_e opcode;
     logic [2:0] funct3_bits;
     logic [6:0] funct7_bits;

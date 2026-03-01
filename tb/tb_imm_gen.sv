@@ -1,9 +1,11 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module tb_imm_gen;
-    timeunit 1ns;
-    timeprecision 1ps;
-    
     logic [XLEN-1:0] immediate;
     logic [XLEN-1:0] instruction;
 

@@ -1,9 +1,11 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module tb_pc_plus4;
-
-    timeunit 1ns;
-    timeprecision 1ps;
 
     initial begin
         assert(pc_plus4(32'h1000) == 32'h1004) else $error("FAILED 1");

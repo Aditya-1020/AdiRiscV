@@ -1,14 +1,13 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module riscv_single_cycle_core (
     input logic clk,
     input logic reset
 );
-
-    timeunit 1ns;
-    timeprecision 1ps;
-
-    // Signals
 
     // PC
     logic [XLEN-1:0] pc, pc_next;
@@ -104,6 +103,8 @@ module riscv_single_cycle_core (
     assign alu_b = ctrl.alu_src ? immediate : rs2_data;
 
     alu alu_inst (
+        .clk(clk),
+        .reset(reset),
         .a(alu_a),
         .b(alu_b),
         .op(ctrl.alu_op),
@@ -112,6 +113,8 @@ module riscv_single_cycle_core (
     );
 
     branch_unit branch_unit_inst (
+        .clk(clk),
+        .reset(reset),
         .rs1_data(rs1_data),
         .rs2_data(rs2_data),
         .pc(pc),
@@ -129,6 +132,7 @@ module riscv_single_cycle_core (
 
     dmem dmem_inst (
         .clk(clk),
+        .reset(reset),
         .addr(dmem_addr),
         .wdata(dmem_wdata),
         .wr_en(ctrl.mem_write),
@@ -158,7 +162,7 @@ module riscv_single_cycle_core (
         end
     end
 
-    assign pc_en = 1'b1; // always 1 in signle-cycle (no stalls)
+    assign pc_en = 1'b1; // always 1 in single-cycle (no stalls)
 
 
 endmodule

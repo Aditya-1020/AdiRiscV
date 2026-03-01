@@ -1,3 +1,7 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module ras (
@@ -11,12 +15,11 @@ module ras (
     output logic [XLEN-1:0] predicted_return,
     output logic valid
 );
-    timeunit 1ns; timeprecision 1ps;
 
     typedef enum logic [1:0] {
-        DEFAULT = 2'b00,
-        PUSH = 2'b10,
-        POP = 2'b01,
+        DEFAULT      = 2'b00,
+        POP          = 2'b01,
+        PUSH         = 2'b10,
         PUSH_AND_POP = 2'b11
     } stack_op_t;
 
@@ -31,6 +34,8 @@ module ras (
     assign push_en = count < RAS_SIZE;
     assign pop_en = count > 0;
 
+    logic [RAS_PTR_WIDTH-1:0] next_tos;
+    assign next_tos = (tos == RAS_SIZE-1) ? 0 : tos + 1;
 
     assign valid = (count != 0);
     assign predicted_return = valid ? stack[tos] : '0;
@@ -42,8 +47,8 @@ module ras (
         end else begin
             case (op)
                 PUSH: begin // push only
-                   tos <= (tos == RAS_SIZE-1) ? 0 : tos + 1;
-                   stack[tos + 1] <= return_addr;
+                   tos <= next_tos
+                   stack[next_tos] <= return_addr;
                    count <= push_en ? count + 1 : count; // inc if not full
                 end
 

@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module id_ex_reg (
@@ -8,9 +13,6 @@ module id_ex_reg (
     input id_ex_reg_t in, // from id
     output id_ex_reg_t out // to ex
 );
-
-    timeunit 1ns;
-    timeprecision 1ps;
 
     always_ff @(posedge clk) begin
         if (reset || flush) begin

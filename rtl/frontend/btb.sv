@@ -1,3 +1,7 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module btb (
@@ -17,9 +21,6 @@ module btb (
     output logic hit,
     output logic [XLEN-1:0] target_predicted
 );
-    timeunit 1ns;
-    timeprecision 1ps;
-
     logic [BTB_SIZE-1:0] valid; // valid bit for each entry
     logic [BTB_TAG_WIDTH-1:0] tag_array [BTB_SIZE-1:0];
     logic [XLEN-1:0] target_array [BTB_SIZE-1:0];

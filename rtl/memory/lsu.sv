@@ -1,3 +1,7 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module lsu (
@@ -24,9 +28,6 @@ module lsu (
     output logic lsu_ready,
     output logic misaligned_error
 );
-
-    timeunit 1ns; timeprecision 1ps;
-
     logic [XLEN-1:0] rdata_aligned;
     logic [XLEN-1:0] wdata_aligned;
     logic [3:0] byte_enable;

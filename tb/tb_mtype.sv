@@ -1,9 +1,11 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module tb_mtype;
-
-    timeunit 1ns;
-    timeprecision 1ps;
 
     logic clk, reset;
     logic [XLEN-1:0] a, b;

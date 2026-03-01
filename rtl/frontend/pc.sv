@@ -1,3 +1,7 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module pc(
@@ -18,7 +22,6 @@ module pc(
     output logic [XLEN-1:0] pc,
     output logic [XLEN-1:0] pc_plus4
 );
-    timeunit 1ns; timeprecision 1ps;
 
     logic [XLEN-1:0] pc_next;
     assign pc_plus4 = pc + 32'd4;

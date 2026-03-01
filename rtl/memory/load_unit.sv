@@ -1,3 +1,7 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module load_unit (
@@ -6,8 +10,6 @@ module load_unit (
     input mem_op_e mem_op,
     output logic [XLEN-1:0] rdata_aligned
 );
-    timeunit 1ns; timeprecision 1ps;
-
     logic [1:0] byte_offset;
     assign byte_offset = addr[1:0];
 

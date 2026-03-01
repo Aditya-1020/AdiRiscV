@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module wb_stage (
@@ -9,11 +14,9 @@ module wb_stage (
     output logic [XLEN-1:0] wb_write_data,
     output logic wb_reg_write
 );
-    timeunit 1ns; timeprecision 1ps;
-
     // mem data vs alu result
     always_comb begin
-        unique case (mem_wb_in.ctrl.mem_to_reg)
+        case (mem_wb_in.ctrl.mem_to_reg)
             1'b1: wb_write_data = mem_wb_in.mem_data; // loads
             1'b0: wb_write_data = mem_wb_in.alu_result; // ALU/JAL/JALR/LUI/AUIPC
             default: wb_write_data = '0;

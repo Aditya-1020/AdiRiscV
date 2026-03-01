@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module id_stage (
@@ -10,8 +15,6 @@ module id_stage (
     
     output id_ex_reg_t id_ex_out
 );
-
-    timeunit 1ns; timeprecision 1ps;
 
     logic [4:0] rs1_addr, rs2_addr, rd_addr;
     logic [XLEN-1:0] rs1_data, rs2_data, immediate;

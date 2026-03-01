@@ -1,3 +1,7 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module if_stage (
@@ -30,8 +34,6 @@ module if_stage (
 
     output if_id_reg_t if_id_out
 );
-    timeunit 1ns; timeprecision 1ps;
-
     localparam logic [4:0] RA_REG = 5'd1; // x1 (ra)
     localparam logic [4:0] T0_REG = 5'd5; // x5 (t0)
 

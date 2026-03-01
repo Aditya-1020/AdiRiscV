@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module alu (
@@ -10,9 +15,6 @@ module alu (
     output logic [XLEN-1:0] result,
     output logic ready
 );
-    timeunit 1ns;
-    timeprecision 1ps;
-
     logic [4:0] shift_amt;
     assign shift_amt = b[4:0];
     

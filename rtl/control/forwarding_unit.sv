@@ -1,5 +1,8 @@
-import riscv_pkg::*;
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
 
+import riscv_pkg::*;
 
 module forwarding_unit (
     input logic [REG_ADDR_WIDTH-1:0] id_ex_rs1_addr, id_ex_rs2_addr,
@@ -12,12 +15,6 @@ module forwarding_unit (
     output forward_src_e forward_a, // rs1
     output forward_src_e forward_b // rs2
 );
-
-    timeunit 1ns;
-    timeprecision 1ps;
-
-    
-
     // rs1 (alu op a)
     always_comb begin
         forward_a = FWD_NONE;

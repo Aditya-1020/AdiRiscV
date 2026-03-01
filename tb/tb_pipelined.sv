@@ -1,8 +1,11 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module tb_pipelined;
-    timeunit 1ns;
-    timeprecision 1ps;
 
     logic clk;
     logic reset;

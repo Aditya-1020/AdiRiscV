@@ -1,8 +1,12 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
+
 import riscv_pkg::*;
 
 module tb_regfile;
-    timeunit 1ns;
-    timeprecision 1ps;
 
     logic clk;
     logic [4:0] rs1_addr, rs2_addr, rd;

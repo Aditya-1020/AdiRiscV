@@ -1,9 +1,11 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module tb_branch_unit;
-
-    timeunit 1ns;
-    timeprecision 1ps;
 
     logic [XLEN-1:0] rs1_data, rs2_data;
     logic [XLEN-1:0] pc, imm;

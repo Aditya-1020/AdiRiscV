@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module if_id_reg (
@@ -7,12 +12,7 @@ module if_id_reg (
     input logic flush, // insert bubble (NOP)
     input if_id_reg_t in,
     output if_id_reg_t out
-);
-
-    timeunit 1ns;
-    timeprecision 1ps;
-
-    
+);  
     always_ff @(posedge clk) begin
         if (reset || flush) begin
             out.pc <= RESET_PC;

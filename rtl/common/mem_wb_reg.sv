@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module mem_wb_reg (
@@ -8,9 +13,6 @@ module mem_wb_reg (
     input mem_wb_reg_t in, // from mem
     output mem_wb_reg_t out
 );
-
-    timeunit 1ns;
-    timeprecision 1ps;
 
     always_ff @(posedge clk) begin
         if (reset || flush) begin

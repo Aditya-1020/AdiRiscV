@@ -1,9 +1,6 @@
 // RISC-V RV32I Package - SystemVerilog
 
 package riscv_pkg;
-
-    timeunit 1ns; timeprecision 1ps;
-
     // Basic Architecture Parameters
     parameter int XLEN = 32;
     parameter int XLEN_DOUBLE = 64;
@@ -186,12 +183,14 @@ package riscv_pkg;
     // Branch Prediction
     
     // Branch Target Buffer parameters
-    parameter int BTB_SIZE = 64;
+    parameter int BTB_SIZE = 16;
+    parameter int PHT_SIZE = 64;
+    
     parameter int BTB_INDEX_WIDTH = $clog2(BTB_SIZE);
     parameter int BTB_TAG_WIDTH = XLEN - BTB_INDEX_WIDTH - 2;
     
     // Return Address Stack parameters
-    parameter int RAS_SIZE = 8;
+    parameter int RAS_SIZE = 4;
     parameter int RAS_PTR_WIDTH = $clog2(RAS_SIZE);
     
     // Branch prediction state (2-bit saturating counter)

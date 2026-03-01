@@ -1,12 +1,13 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module imm_gen(
     input logic [XLEN-1:0] instruction,
     output logic [XLEN-1:0] immediate
 );
-    timeunit 1ns;
-    timeprecision 1ps;
-
     logic [6:0] opcode;
     assign opcode = instruction[6:0];
 

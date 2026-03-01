@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module ex_stage (
@@ -35,8 +40,6 @@ module ex_stage (
     output ex_mem_reg_t ex_mem_out,
     output logic ex_stall
 );
-    timeunit 1ns; timeprecision 1ps;
-
     logic [XLEN-1:0] alu_a, alu_b;
     logic [XLEN-1:0] alu_result;
     logic alu_zero, alu_ready;

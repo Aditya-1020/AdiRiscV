@@ -1,3 +1,7 @@
+`ifndef SYNTHESIS
+timeunit 1ns; timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module mem_stage (
@@ -15,9 +19,6 @@ module mem_stage (
     output logic mem_stall, // dcache stall
     output mem_wb_reg_t mem_wb_out
 );
-
-    timeunit 1ns; timeprecision 1ps;
-
     logic [XLEN-1:0] mem_rdata_aligned;
     logic lsu_ready;
     logic misaligned_error;

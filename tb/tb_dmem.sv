@@ -1,9 +1,11 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module tb_dmem;
-
-    timeunit 1ns;
-    timeprecision 1ps;
 
     logic clk;
     // logic reset;

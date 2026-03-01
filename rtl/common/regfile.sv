@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module regfile (
@@ -10,8 +15,6 @@ module regfile (
     output logic [XLEN-1:0] rs1_data,
     output logic [XLEN-1:0] rs2_data
 );
-    timeunit 1ns; timeprecision 1ps;
-
     localparam REG_ZERO = 5'd0;
 
     // 32 reg x0 always 0

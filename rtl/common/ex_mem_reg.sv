@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module ex_mem_reg (
@@ -8,10 +13,6 @@ module ex_mem_reg (
     input ex_mem_reg_t in, // from ex
     output ex_mem_reg_t out
 );
-
-    timeunit 1ns;
-    timeprecision 1ps;
-
     always_ff @(posedge clk) begin
         if (reset || flush) begin
             out.alu_result <= '0;

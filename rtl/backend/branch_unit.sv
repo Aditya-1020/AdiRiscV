@@ -1,3 +1,8 @@
+`ifndef SYNTHESIS
+timeunit 1ns;
+timeprecision 1ps;
+`endif
+
 import riscv_pkg::*;
 
 module branch_unit(
@@ -10,9 +15,6 @@ module branch_unit(
     output logic branch_taken,
     output logic [XLEN-1:0] branch_target
 );
-    timeunit 1ns;
-    timeprecision 1ps;
-
     localparam logic [XLEN-1:0] JALR_ALIGN_MASK = ~{{(XLEN-1){1'b0}}, 1'b1};  // ~32'h1;
 
     logic condition_met;
