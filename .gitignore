@@ -17,3 +17,11 @@ sim/
 
 riscv-venv/
 build/
+
+vivado_*
+vivado.*
+timing_report.txt
+
+.Xil/
+
+waveforms/
