@@ -25,3 +25,5 @@ timing_report.txt
 .Xil/
 
 waveforms/
+
+riscv-spec.pdf
